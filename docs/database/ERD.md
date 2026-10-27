@@ -120,7 +120,6 @@ erDiagram
         decimal price
         string currency
         integer duration_days
-        integer max_active_trainees
         boolean is_active
     }
 
