@@ -65,7 +65,7 @@ class AppServiceProvider extends ServiceProvider
                 return true;
             }
 
-            if (! $user->isCoach() || ! $trainee->is_active) {
+            if (! $user->isCoach() || ! $trainee->is_active || ! $trainee->isTrainee()) {
                 return false;
             }
 

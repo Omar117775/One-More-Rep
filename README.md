@@ -39,4 +39,10 @@ one-more-rep/
 - Reuse a centralized design system.
 
 ## Status
-Initial project setup. Architecture and database design are the next milestones.
+P1-P5 complete: foundation, architecture/data model, authentication/profiles, coach-trainee management, and the training system (exercise library, programs, assignments, workout sessions/sets, cardio, analytics, and the P5 Flutter trainee app). Subscriptions/payments, coach/admin dashboards, AI, and release hardening remain.
+
+See [docs/architecture/P5_TRAINING_AND_PROGRESS.md](docs/architecture/P5_TRAINING_AND_PROGRESS.md) for P5 API, security, and verification details.
+
+## Scalability
+- See [docs/SCALABILITY_REVIEW.md](docs/SCALABILITY_REVIEW.md) for production scalability review and recommendations.
+- See [docs/LOAD_TEST_PLAN.md](docs/LOAD_TEST_PLAN.md) for reproducible load testing plan.

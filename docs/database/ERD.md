@@ -109,6 +109,7 @@ erDiagram
         string relationship_type
         string status
         timestamp started_at
+        timestamp responded_at
         timestamp ended_at
     }
 
@@ -198,14 +199,14 @@ erDiagram
 
     WORKOUT_PROGRAM_DAYS {
         bigint id PK
-        bigint program_id FK
+        bigint workout_program_id FK
         integer day_number
         string name
     }
 
     WORKOUT_DAY_EXERCISES {
         bigint id PK
-        bigint program_day_id FK
+        bigint workout_program_day_id FK
         bigint exercise_id FK
         integer sort_order
         integer target_sets
@@ -217,7 +218,7 @@ erDiagram
 
     WORKOUT_ASSIGNMENTS {
         bigint id PK
-        bigint program_id FK
+        bigint workout_program_id FK
         bigint trainee_id FK
         bigint assigned_by FK
         date starts_on
@@ -227,7 +228,7 @@ erDiagram
 
     WORKOUT_SESSIONS {
         bigint id PK
-        bigint assignment_id FK
+        bigint workout_assignment_id FK
         bigint trainee_id FK
         timestamp started_at
         timestamp completed_at
@@ -236,11 +237,11 @@ erDiagram
 
     WORKOUT_SETS {
         bigint id PK
-        bigint session_id FK
+        bigint workout_session_id FK
         bigint exercise_id FK
         integer set_number
         decimal weight_kg
-        decimal reps
+        integer reps
         boolean is_completed
     }
 
@@ -288,10 +289,22 @@ erDiagram
 8. Use decimal/numeric database types for monetary amounts and weights.
 9. Use UTC timestamps where applicable.
 10. Never store plaintext passwords or payment card details.
+11. `coach_trainee_relationships.status` is limited to `pending`, `active`, `rejected`, `cancelled`, `ended`.
+12. Only one `pending` row may exist per coach-trainee pair, and only one `pending` **primary** request per trainee (partial unique indexes). Only one `active` pair and one `active` primary coach per trainee are allowed.
+13. Lifecycle timestamp rules are enforced by a check constraint: `pending` has no lifecycle timestamps, `active` has `started_at`, rejected/cancelled/ended rows have `ended_at`, and rejected rows have `responded_at`.
+14. `body_measurements` rows belong to a trainee, require at least one measurement value, and enforce documented ranges (weight 20-500 kg, body fat 0-100%, waist/chest 20-300 cm, arm 5-150 cm). Deleting a trainee cascades their measurement records.
+15. `workout_programs` are coach-owned. A coach has a maximum of 7 program days, and `day_number` must be between 1 and 7.
+16. `workout_day_exercises.sort_order` is unique **per program day** (not globally); target sets/reps, target weight, and rest values are range-checked.
+17. A trainee may have at most one active assignment per program (partial unique index). `workout_assignments.status` is limited to `active`/`ended`; ended rows require `ends_on >= starts_on`.
+18. `workout_sets` are unique by `(workout_session_id, exercise_id, set_number)`; set number, reps, and weight are range-checked. Session completion cannot precede session start.
+19. `cardio_sessions.activity_type` is a controlled enum; duration, distance, and average heart rate are range-checked. Deleting a trainee cascades cardio records.
+20. `exercises` and `workout_programs` referenced by training history use restrictive deletes where history must be preserved; program/day/exercise children cascade within their owning program.
 
 ## 5. Implementation Notes
 
 - Use Laravel migrations as the source of truth for the physical schema.
-- Use Laravel authorization policies to enforce ownership and role boundaries.
+- Use Laravel authorization policies to enforce ownership, relationship, and role boundaries.
 - Add automated tests for authentication, authorization, subscription limits, vouchers, and payment approval.
 - Treat this ERD as the initial logical model; refine it before creating production migrations.
+- P4 delivers the coach-trainee join-request lifecycle and dated body-measurement progress records.
+- P5 delivers the exercise library, coach programs, assignments, workout sessions/sets, cardio, and date-ranged analytics. Subscription/payment and AI tables remain planned for later phases.
