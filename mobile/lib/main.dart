@@ -1,122 +1,515 @@
+
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const OneMoreRepApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+abstract final class AppColors {
+  static const background = Color(0xFF080D16);
+  static const surface = Color(0xFF111A29);
+  static const surfaceLight = Color(0xFF19263A);
+  static const blue = Color(0xFF2864F0);
+  static const blueLight = Color(0xFF65A0FF);
+  static const white = Color(0xFFF5F7FC);
+  static const muted = Color(0xFF8B98AD);
+  static const border = Color(0xFF26364D);
+}
 
-  // This widget is the root of your application.
+class OneMoreRepApp extends StatelessWidget {
+  const OneMoreRepApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
+    final baseTheme = ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.dark,
+      scaffoldBackgroundColor: AppColors.background,
+      fontFamily: 'Manrope',
+      colorScheme: const ColorScheme.dark(
+        primary: AppColors.blue,
+        secondary: AppColors.blueLight,
+        surface: AppColors.surface,
+        onPrimary: Colors.white,
+        onSurface: AppColors.white,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+    );
+
+    return MaterialApp(
+      title: 'One More Rep',
+      debugShowCheckedModeBanner: false,
+      theme: baseTheme.copyWith(
+        textTheme: baseTheme.textTheme.apply(
+          bodyColor: AppColors.white,
+          displayColor: AppColors.white,
+        ),
+      ),
+      home: const SplashScreen(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _SplashScreenState extends State<SplashScreen>
+    with TickerProviderStateMixin {
+  late final AnimationController _entranceController;
+  late final AnimationController _glowController;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  late final Animation<double> _logoOpacity;
+  late final Animation<double> _logoScale;
+  late final Animation<Offset> _logoSlide;
+  late final Animation<double> _titleOpacity;
+  late final Animation<Offset> _titleSlide;
+  late final Animation<double> _subtitleOpacity;
+
+  bool _showPreview = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _entranceController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1700),
+    );
+
+    _glowController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2400),
+    )..repeat(reverse: true);
+
+    _logoOpacity = CurvedAnimation(
+      parent: _entranceController,
+      curve: const Interval(0.0, 0.58, curve: Curves.easeOut),
+    );
+
+    _logoScale = Tween<double>(begin: 0.88, end: 1).animate(
+      CurvedAnimation(
+        parent: _entranceController,
+        curve: const Interval(0.0, 0.72, curve: Curves.easeOutCubic),
+      ),
+    );
+
+    _logoSlide = Tween<Offset>(
+      begin: const Offset(0, 0.045),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(
+        parent: _entranceController,
+        curve: const Interval(0.0, 0.68, curve: Curves.easeOutCubic),
+      ),
+    );
+
+    _titleOpacity = CurvedAnimation(
+      parent: _entranceController,
+      curve: const Interval(0.38, 0.82, curve: Curves.easeOut),
+    );
+
+    _titleSlide = Tween<Offset>(
+      begin: const Offset(0, 0.28),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(
+        parent: _entranceController,
+        curve: const Interval(0.38, 0.84, curve: Curves.easeOutCubic),
+      ),
+    );
+
+    _subtitleOpacity = CurvedAnimation(
+      parent: _entranceController,
+      curve: const Interval(0.65, 1.0, curve: Curves.easeOut),
+    );
+
+    _entranceController.forward();
+  }
+
+  @override
+  void dispose() {
+    _entranceController.dispose();
+    _glowController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: .center,
-          children: [
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+      body: Stack(
+        children: [
+          const Positioned.fill(child: _AmbientBackground()),
+
+          SafeArea(
+            child: AnimatedBuilder(
+              animation: Listenable.merge([
+                _entranceController,
+                _glowController,
+              ]),
+              builder: (context, child) {
+                final glow = 0.12 + (_glowController.value * 0.12);
+
+                return Column(
+                  children: [
+                    const Spacer(flex: 2),
+
+                    Transform.translate(
+                      offset: _logoSlide.value * 100,
+                      child: Transform.scale(
+                        scale: _logoScale.value,
+                        child: Opacity(
+                          opacity: _logoOpacity.value,
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 28),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(28),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.blue.withValues(
+                                    alpha: glow,
+                                  ),
+                                  blurRadius: 42,
+                                  spreadRadius: 2,
+                                ),
+                              ],
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(24),
+                              child: AspectRatio(
+                                aspectRatio: 1,
+                                child: Image.asset(
+                                  'assets/images/logo.jpg',
+                                  fit: BoxFit.contain,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return const _LogoFallback();
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 34),
+
+                    SlideTransition(
+                      position: _titleSlide,
+                      child: Opacity(
+                        opacity: _titleOpacity.value,
+                        child: const Text(
+                          'ONE MORE REP',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 29,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 2.0,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 9),
+
+                    Opacity(
+                      opacity: _subtitleOpacity.value,
+                      child: const Text(
+                        'BUILT THROUGH DISCIPLINE',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: AppColors.muted,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 2.4,
+                        ),
+                      ),
+                    ),
+
+                    const Spacer(flex: 2),
+
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(28, 0, 28, 28),
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            width: double.infinity,
+                            height: 56,
+                            child: FilledButton(
+                              onPressed: () {
+                                setState(() => _showPreview = true);
+                              },
+                              style: FilledButton.styleFrom(
+                                backgroundColor: AppColors.blue,
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                              ),
+                              child: const Text(
+                                'ENTER THE ARENA',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: 1.1,
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 16),
+
+                          const Text(
+                            'STRENGTH  •  DISCIPLINE  •  PROGRESS',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: AppColors.muted,
+                              fontSize: 9,
+                              letterSpacing: 1.1,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+
+                          const SizedBox(height: 10),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
-          ],
+          ),
+
+          if (_showPreview)
+            _PreviewOverlay(
+              onClose: () => setState(() => _showPreview = false),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AmbientBackground extends StatelessWidget {
+  const _AmbientBackground();
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        const Positioned.fill(
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0xFF101D31),
+                  AppColors.background,
+                  Color(0xFF080D16),
+                ],
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          top: -120,
+          right: -100,
+          child: Container(
+            width: 280,
+            height: 280,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: AppColors.blue.withValues(alpha: 0.10),
+            ),
+          ),
+        ),
+        Positioned(
+          bottom: -170,
+          left: -100,
+          child: Container(
+            width: 300,
+            height: 300,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: AppColors.blueLight.withValues(alpha: 0.045),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _LogoFallback extends StatelessWidget {
+  const _LogoFallback();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: AppColors.surface,
+      alignment: Alignment.center,
+      child: const Icon(
+        Icons.shield_outlined,
+        size: 110,
+        color: AppColors.blueLight,
+      ),
+    );
+  }
+}
+
+class _PreviewOverlay extends StatelessWidget {
+  const _PreviewOverlay({required this.onClose});
+
+  final VoidCallback onClose;
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned.fill(
+      child: Material(
+        color: AppColors.background.withValues(alpha: 0.98),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Align(
+                  alignment: Alignment.topRight,
+                  child: IconButton(
+                    onPressed: onClose,
+                    icon: const Icon(Icons.close),
+                    tooltip: 'Close preview',
+                  ),
+                ),
+
+                const Spacer(),
+
+                const Icon(
+                  Icons.shield_outlined,
+                  size: 58,
+                  color: AppColors.blueLight,
+                ),
+
+                const SizedBox(height: 24),
+
+                const Text(
+                  'YOUR NEXT LEVEL\nSTARTS HERE.',
+                  style: TextStyle(
+                    fontSize: 31,
+                    height: 1.2,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.6,
+                  ),
+                ),
+
+                const SizedBox(height: 14),
+
+                const Text(
+                  'Train with purpose. Track every rep. '
+                  'Build consistency one session at a time.',
+                  style: TextStyle(
+                    fontSize: 15,
+                    height: 1.7,
+                    color: AppColors.muted,
+                  ),
+                ),
+
+                const SizedBox(height: 30),
+
+                const _FeatureRow(
+                  icon: Icons.fitness_center,
+                  title: 'Structured workouts',
+                  subtitle: 'Follow your training plan.',
+                ),
+
+                const SizedBox(height: 18),
+
+                const _FeatureRow(
+                  icon: Icons.insights_outlined,
+                  title: 'Track your progress',
+                  subtitle: 'See your performance over time.',
+                ),
+
+                const SizedBox(height: 18),
+
+                const _FeatureRow(
+                  icon: Icons.psychology_outlined,
+                  title: 'AI-powered coaching',
+                  subtitle: 'A smarter training experience.',
+                ),
+
+                const Spacer(),
+
+                SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: OutlinedButton(
+                    onPressed: onClose,
+                    child: const Text('BACK TO SPLASH'),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
+    );
+  }
+}
+
+class _FeatureRow extends StatelessWidget {
+  const _FeatureRow({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          width: 46,
+          height: 46,
+          decoration: BoxDecoration(
+            color: AppColors.surfaceLight,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AppColors.border),
+          ),
+          child: Icon(icon, color: AppColors.blueLight),
+        ),
+
+        const SizedBox(width: 14),
+
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 14,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                subtitle,
+                style: const TextStyle(
+                  color: AppColors.muted,
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

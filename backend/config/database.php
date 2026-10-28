@@ -96,7 +96,22 @@ return [
             'prefix' => '',
             'prefix_indexes' => true,
             'search_path' => 'public',
-            'sslmode' => env('DB_SSLMODE', 'prefer'),
+            'sslmode' => 'prefer',
+        ],
+
+        'pgsql_testing' => [
+            'driver' => 'pgsql',
+            'url' => env('DB_TEST_URL'),
+            'host' => env('DB_TEST_HOST', '127.0.0.1'),
+            'port' => env('DB_TEST_PORT', '5432'),
+            'database' => env('DB_TEST_DATABASE', 'one_more_rep_test'),
+            'username' => env('DB_TEST_USERNAME', 'postgres'),
+            'password' => env('DB_TEST_PASSWORD', ''),
+            'charset' => env('DB_CHARSET', 'utf8'),
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'search_path' => 'public',
+            'sslmode' => env('DB_TEST_SSLMODE', 'prefer'),
         ],
 
         'sqlsrv' => [
