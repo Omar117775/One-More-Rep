@@ -1,4 +1,4 @@
-# P5 - Training, Cardio, Analytics, and Trainee App
+﻿# P5 - Training, Cardio, Analytics, and Trainee App
 
 All routes are versioned under `/api/v1` and return JSON. Authentication uses Sanctum bearer tokens. Business rules and tenant isolation are enforced server-side; see `AUTHORIZATION.md`.
 
@@ -159,7 +159,9 @@ After termination, the trainee can still read historical sessions they own, but 
 - `lib/features`: splash/sign-in, shell, Home, Train, Cardio, Progress, Settings.
 - `lib/localization`: typed English/Arabic strings and RTL directionality.
 
-The P5 auth bridge intentionally stores the token **in memory only**. Persistent auth/session restoration and full profile/onboarding UX remain P7 work.
+The P5 auth bridge intentionally stores the token **in memory only**. Persistent auth/session restoration and full profile/onboarding UX remain P7 work. A stable `AuthGate` owns the splash/sign-in/shell transition so route-stack pushes cannot bypass the signed-in state. Date formatting is initialized for `en`/`ar` at startup; inherited-widget reads occur in `didChangeDependencies`, never `initState`.
+
+Training history supports editing existing sessions and sets through the same logger used for creation. Progress includes derived weight/workout-volume/cardio trends, backend-aligned measurement ranges, today-capped date pickers, and explicit-null updates so cleared measurements are removed. Cardio date/time selection is capped at now.
 
 ### Design and motion
 
@@ -172,7 +174,7 @@ The P5 auth bridge intentionally stores the token **in memory only**. Persistent
 
 ## 8. Verification Evidence
 
-Run on 2026-10-28 (local development environment):
+Run on 2026-10-28; mobile regression suite re-run on 2026-10-29 (local development environment):
 
 | Command | Result |
 |---------|--------|
@@ -181,9 +183,9 @@ Run on 2026-10-28 (local development environment):
 | `vendor/bin/phpunit -c phpunit.integration.xml` | PASSED - 28 tests, 39 assertions on isolated PostgreSQL `one_more_rep_test` |
 | `vendor/bin/pint --test` | PASSED |
 | `php artisan route:list --path=api/v1 --json` | 67 API v1 routes |
-| `flutter analyze` | No issues found |
-| `flutter test` | 39 tests passed |
-| `flutter build web` | PASSED (`build/web`) |
+| `flutter analyze` | No issues found (re-run 2026-10-29) |
+| `flutter test` | 48 tests passed (re-run 2026-10-29) |
+| `flutter build web` | PASSED (`build/web`, re-run 2026-10-29) |
 
 PostgreSQL integration tests refuse any driver other than `pgsql` and any database not ending in `_test`. Local test credentials were supplied at runtime from the local `.env`; they were not printed or committed. No development or production database was touched.
 

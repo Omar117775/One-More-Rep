@@ -7,15 +7,15 @@ import '../../core/formatters.dart';
 import '../../design/tokens.dart';
 import '../../data/models/workout_session.dart';
 import '../../localization/app_strings.dart';
+import 'session_log_screen.dart';
 
-/// Session history with delete and detail (slides-up sheet per session).
+/// Session history with edit, delete and detail (slides-up sheet per session).
 class SessionHistoryScreen extends StatefulWidget {
   const SessionHistoryScreen({super.key});
 
-  static Future<void> push(BuildContext context) =>
-      Navigator.of(context).push(
-        MaterialPageRoute<void>(builder: (_) => const SessionHistoryScreen()),
-      );
+  static Future<void> push(BuildContext context) => Navigator.of(
+    context,
+  ).push(MaterialPageRoute<void>(builder: (_) => const SessionHistoryScreen()));
 
   @override
   State<SessionHistoryScreen> createState() => _SessionHistoryScreenState();
@@ -26,10 +26,15 @@ class _SessionHistoryScreenState extends State<SessionHistoryScreen> {
   String? _error;
   List<WorkoutSessionModel> _sessions = [];
   bool _busyDelete = false;
+  bool _loadedOnce = false;
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // AppScope is an inherited widget, so the first read must happen here
+    // rather than in initState.
+    if (_loadedOnce) return;
+    _loadedOnce = true;
     _load();
   }
 
@@ -98,6 +103,12 @@ class _SessionHistoryScreenState extends State<SessionHistoryScreen> {
     }
   }
 
+  Future<void> _edit(WorkoutSessionModel session) async {
+    final updated = await SessionLogScreen.pushEdit(context, session: session);
+    if (updated == null || !mounted) return;
+    await _load();
+  }
+
   void _openDetail(WorkoutSessionModel session) {
     showModalBottomSheet<void>(
       context: context,
@@ -117,8 +128,10 @@ class _SessionHistoryScreenState extends State<SessionHistoryScreen> {
       appBar: AppBar(title: Text(strings.sessionHistory)),
       body: switch (_status) {
         SessionLoadStatus.loading => const OmrLoading(),
-        SessionLoadStatus.error =>
-          OmrErrorPanel(message: _error ?? strings.errorGeneric, onRetry: _load),
+        SessionLoadStatus.error => OmrErrorPanel(
+          message: _error ?? strings.errorGeneric,
+          onRetry: _load,
+        ),
         SessionLoadStatus.ready =>
           _sessions.isEmpty
               ? OmrEmptyPanel(
@@ -132,7 +145,8 @@ class _SessionHistoryScreenState extends State<SessionHistoryScreen> {
                     physics: const AlwaysScrollableScrollPhysics(),
                     padding: const EdgeInsets.all(AppSpacing.lg),
                     itemCount: _sessions.length,
-                    separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.md),
+                    separatorBuilder: (_, _) =>
+                        const SizedBox(height: AppSpacing.md),
                     itemBuilder: (context, index) {
                       final session = _sessions[index];
                       return OmrCard(
@@ -144,10 +158,14 @@ class _SessionHistoryScreenState extends State<SessionHistoryScreen> {
                               children: [
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        formatDateTime(session.startedAt, locale: locale),
+                                        formatDateTime(
+                                          session.startedAt,
+                                          locale: locale,
+                                        ),
                                         style: AppText.title,
                                       ),
                                       const SizedBox(height: AppSpacing.xs),
@@ -162,16 +180,28 @@ class _SessionHistoryScreenState extends State<SessionHistoryScreen> {
                                 ),
                                 Container(
                                   padding: const EdgeInsets.symmetric(
-                                      horizontal: AppSpacing.sm, vertical: 3),
+                                    horizontal: AppSpacing.sm,
+                                    vertical: 3,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: session.isCompleted
-                                        ? AppColors.success.withValues(alpha: 0.14)
-                                        : AppColors.warning.withValues(alpha: 0.14),
-                                    borderRadius: BorderRadius.circular(AppRadii.pill),
+                                        ? AppColors.success.withValues(
+                                            alpha: 0.14,
+                                          )
+                                        : AppColors.warning.withValues(
+                                            alpha: 0.14,
+                                          ),
+                                    borderRadius: BorderRadius.circular(
+                                      AppRadii.pill,
+                                    ),
                                     border: Border.all(
                                       color: session.isCompleted
-                                          ? AppColors.success.withValues(alpha: 0.45)
-                                          : AppColors.warning.withValues(alpha: 0.45),
+                                          ? AppColors.success.withValues(
+                                              alpha: 0.45,
+                                            )
+                                          : AppColors.warning.withValues(
+                                              alpha: 0.45,
+                                            ),
                                     ),
                                   ),
                                   child: Text(
@@ -186,9 +216,19 @@ class _SessionHistoryScreenState extends State<SessionHistoryScreen> {
                                   ),
                                 ),
                                 IconPill(
+                                  icon: Icons.edit_outlined,
+                                  tooltip: strings.editSession,
+                                  onPressed: _busyDelete
+                                      ? null
+                                      : () => _edit(session),
+                                ),
+                                const SizedBox(width: AppSpacing.xs),
+                                IconPill(
                                   icon: Icons.delete_outline,
                                   tooltip: strings.deleteSession,
-                                  onPressed: _busyDelete ? null : () => _delete(session),
+                                  onPressed: _busyDelete
+                                      ? null
+                                      : () => _delete(session),
                                 ),
                               ],
                             ),
@@ -217,7 +257,12 @@ class _SessionDetailSheet extends StatelessWidget {
     final locale = controller.strings.localeName;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.xl),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        0,
+        AppSpacing.lg,
+        AppSpacing.xl,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,

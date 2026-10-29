@@ -24,12 +24,23 @@ class _SignInScreenState extends State<SignInScreen> {
   bool _obscurePassword = true;
   bool _showAdvanced = false;
   bool _loading = false;
+  bool _apiUrlInitialized = false;
   String? _topError;
 
   @override
   void initState() {
     super.initState();
-    _apiUrlController = TextEditingController(text: AppScope.of(context).apiBaseUrl);
+    _apiUrlController = TextEditingController();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Inherited widgets may not be read from initState. Prefill once here so
+    // controller notifications do not overwrite the user's in-progress edit.
+    if (_apiUrlInitialized) return;
+    _apiUrlInitialized = true;
+    _apiUrlController.text = AppScope.of(context).apiBaseUrl;
   }
 
   @override
@@ -55,12 +66,14 @@ class _SignInScreenState extends State<SignInScreen> {
         password: _passwordController.text,
       );
     } on ApiException catch (error) {
+      if (!mounted) return;
       setState(() {
         _loading = false;
         _topError = _describeError(error);
       });
       return;
     } catch (_) {
+      if (!mounted) return;
       setState(() {
         _loading = false;
         _topError = AppStrings.of(context).errWrongCredentials;

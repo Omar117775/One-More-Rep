@@ -12,24 +12,39 @@ import '../../localization/app_strings.dart';
 /// In-session logging form. Prefills every exercise of the chosen program day
 /// with its target sets/reps/weights; sets can be toggled complete, edited and
 /// added/removed, then saved in-progress or finished.
+///
+/// Pass [session] to edit an existing workout; otherwise [assignment] and
+/// [day] start a new session.
 class SessionLogScreen extends StatefulWidget {
-  const SessionLogScreen({
-    required this.assignment,
-    required this.day,
-    super.key,
-  });
+  const SessionLogScreen({this.assignment, this.day, this.session, super.key})
+    : assert(session != null || (assignment != null && day != null)),
+      assert(session == null || (assignment == null && day == null));
 
-  final Assignment assignment;
-  final ProgramDay day;
+  final Assignment? assignment;
+  final ProgramDay? day;
+  final WorkoutSessionModel? session;
 
-  static Future<void> push(
+  bool get isEditing => session != null;
+
+  static Future<WorkoutSessionModel?> push(
     BuildContext context, {
     required Assignment assignment,
     required ProgramDay day,
   }) {
     return Navigator.of(context).push(
-      MaterialPageRoute<void>(
+      MaterialPageRoute<WorkoutSessionModel>(
         builder: (_) => SessionLogScreen(assignment: assignment, day: day),
+      ),
+    );
+  }
+
+  static Future<WorkoutSessionModel?> pushEdit(
+    BuildContext context, {
+    required WorkoutSessionModel session,
+  }) {
+    return Navigator.of(context).push(
+      MaterialPageRoute<WorkoutSessionModel>(
+        builder: (_) => SessionLogScreen(session: session),
       ),
     );
   }
@@ -55,42 +70,99 @@ class _LoggedRow {
 }
 
 class _SessionLogScreenState extends State<SessionLogScreen> {
-  final _notesController = TextEditingController();
+  late final TextEditingController _notesController;
   final Map<Object?, List<_LoggedRow>> _rowsPerExercise = {};
+  late final List<ProgramExercise> _plannedExercises;
   bool _saving = false;
   String? _errorText;
 
   @override
   void initState() {
     super.initState();
-    for (final planned in widget.day.exercises) {
-      final rows = <_LoggedRow>[];
-      final targetSets = (planned.targetSets != null && planned.targetSets! > 0)
-          ? planned.targetSets!
-          : 3;
-      final targets = planned.targetRepsMin ?? planned.targetRepsMax ?? 0;
-      final reps = targets > 0 ? targets : 0;
-      for (var i = 1; i <= targetSets; i++) {
-        rows.add(
-          _LoggedRow(
-            exerciseId: planned.exerciseId,
-            setNumber: i,
-            repsController: TextEditingController(text: reps > 0 ? '$reps' : ''),
-            weightController: TextEditingController(
-              text: planned.targetWeightKg != null && planned.targetWeightKg! > 0
-                  ? _trimDecimals(planned.targetWeightKg!)
-                  : '',
+    _notesController = TextEditingController(text: widget.session?.notes ?? '');
+    _plannedExercises = widget.session == null
+        ? widget.day!.exercises
+        : _exercisesFromSession(widget.session!);
+    if (widget.session == null) {
+      for (final planned in _plannedExercises) {
+        final rows = <_LoggedRow>[];
+        final targetSets =
+            (planned.targetSets != null && planned.targetSets! > 0)
+            ? planned.targetSets!
+            : 3;
+        final targets = planned.targetRepsMin ?? planned.targetRepsMax ?? 0;
+        final reps = targets > 0 ? targets : 0;
+        for (var i = 1; i <= targetSets; i++) {
+          rows.add(
+            _LoggedRow(
+              exerciseId: planned.exerciseId,
+              setNumber: i,
+              repsController: TextEditingController(
+                text: reps > 0 ? '$reps' : '',
+              ),
+              weightController: TextEditingController(
+                text:
+                    planned.targetWeightKg != null &&
+                        planned.targetWeightKg! > 0
+                    ? _trimDecimals(planned.targetWeightKg!)
+                    : '',
+              ),
+              completed: true,
             ),
-            completed: true,
-          ),
-        );
+          );
+        }
+        _rowsPerExercise[planned.exerciseId ?? planned.exercise.id] = rows;
       }
-      _rowsPerExercise[planned.exerciseId ?? planned.exercise.id] = rows;
+    } else {
+      for (final planned in _plannedExercises) {
+        final key = planned.exerciseId ?? planned.exercise.id;
+        final sets =
+            widget.session!.sets
+                .where((set) => (set.exerciseId ?? set.exercise.id) == key)
+                .toList()
+              ..sort((a, b) => a.setNumber.compareTo(b.setNumber));
+        _rowsPerExercise[key] = [
+          for (final set in sets)
+            _LoggedRow(
+              exerciseId: key,
+              setNumber: set.setNumber,
+              repsController: TextEditingController(
+                text: set.reps > 0 ? '${set.reps}' : '',
+              ),
+              weightController: TextEditingController(
+                text: set.weightKg != null && set.weightKg! > 0
+                    ? _trimDecimals(set.weightKg!)
+                    : '',
+              ),
+              completed: set.isCompleted,
+            ),
+        ];
+      }
     }
   }
 
-  String _trimDecimals(double value) =>
-      value == value.roundToDouble() ? value.toStringAsFixed(0) : value.toString();
+  /// Reconstructs editable exercises from the sets already logged on a
+  /// session. Keeps the order in which exercises first appear.
+  List<ProgramExercise> _exercisesFromSession(WorkoutSessionModel session) {
+    final grouped = <Object?, List<SessionSet>>{};
+    for (final set in session.sets) {
+      final key = set.exerciseId ?? set.exercise.id;
+      grouped.putIfAbsent(key, () => []).add(set);
+    }
+    return [
+      for (final entry in grouped.entries)
+        ProgramExercise(
+          id: null,
+          exerciseId: entry.key,
+          targetSets: entry.value.length,
+          exercise: entry.value.first.exercise,
+        ),
+    ];
+  }
+
+  String _trimDecimals(double value) => value == value.roundToDouble()
+      ? value.toStringAsFixed(0)
+      : value.toString();
 
   @override
   void dispose() {
@@ -136,18 +208,30 @@ class _SessionLogScreenState extends State<SessionLogScreen> {
     setState(() => _saving = true);
     try {
       final now = DateTime.now();
-      await controller.train.createSession(
-        assignmentId: widget.assignment.id,
-        startedAt: now,
-        completedAt: finish ? now : null,
-        notes: _notesController.text,
-        sets: sets,
-      );
+      final WorkoutSessionModel saved;
+      if (widget.session == null) {
+        saved = await controller.train.createSession(
+          assignmentId: widget.assignment!.id,
+          startedAt: now,
+          completedAt: finish ? now : null,
+          notes: _notesController.text,
+          sets: sets,
+        );
+      } else {
+        saved = await controller.train.updateSession(
+          widget.session!.id,
+          notes: _notesController.text,
+          completedAt: finish ? now : null,
+          sets: sets,
+        );
+      }
       if (mounted && context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(strings.completedBadge)),
+          SnackBar(
+            content: Text(finish ? strings.completedBadge : strings.savedNote),
+          ),
         );
-        Navigator.of(context).pop();
+        Navigator.of(context).pop(saved);
       }
     } catch (error) {
       setState(() {
@@ -166,9 +250,11 @@ class _SessionLogScreenState extends State<SessionLogScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          widget.day.name.isEmpty
-              ? '${strings.dayLabel} ${formatInteger(widget.day.dayNumber, locale: locale)}'
-              : widget.day.name,
+          widget.isEditing
+              ? strings.editSession
+              : widget.day!.name.isEmpty
+              ? '${strings.dayLabel} ${formatInteger(widget.day!.dayNumber, locale: locale)}'
+              : widget.day!.name,
         ),
       ),
       bottomNavigationBar: SafeArea(
@@ -179,7 +265,9 @@ class _SessionLogScreenState extends State<SessionLogScreen> {
               Expanded(
                 child: OutlinedButton(
                   onPressed: _saving ? null : () => _save(finish: false),
-                  child: Text(strings.saveDraft),
+                  child: Text(
+                    widget.isEditing ? strings.saveChanges : strings.saveDraft,
+                  ),
                 ),
               ),
               const SizedBox(width: AppSpacing.md),
@@ -204,11 +292,16 @@ class _SessionLogScreenState extends State<SessionLogScreen> {
               decoration: BoxDecoration(
                 color: AppColors.danger.withValues(alpha: 0.10),
                 borderRadius: BorderRadius.circular(AppRadii.sm),
-                border: Border.all(color: AppColors.danger.withValues(alpha: 0.5)),
+                border: Border.all(
+                  color: AppColors.danger.withValues(alpha: 0.5),
+                ),
               ),
-              child: Text(_errorText!, style: AppText.secondary.copyWith(color: AppColors.danger)),
+              child: Text(
+                _errorText!,
+                style: AppText.secondary.copyWith(color: AppColors.danger),
+              ),
             ),
-          for (final planned in widget.day.exercises)
+          for (final planned in _plannedExercises)
             _ExerciseSection(
               planned: planned,
               rows: _rowsPerExercise,
@@ -229,7 +322,11 @@ class _SessionLogScreenState extends State<SessionLogScreen> {
 }
 
 class _ExerciseSection extends StatefulWidget {
-  const _ExerciseSection({required this.planned, required this.rows, required this.onChanged});
+  const _ExerciseSection({
+    required this.planned,
+    required this.rows,
+    required this.onChanged,
+  });
 
   final ProgramExercise planned;
   final Map<Object?, List<_LoggedRow>> rows;
@@ -246,7 +343,11 @@ class _ExerciseSectionState extends State<_ExerciseSection> {
 
   void _addRow() {
     final last = _rows.isNotEmpty ? _rows.last : null;
-    final reps = last?.repsController.text ?? (widget.planned.targetRepsMin ?? widget.planned.targetRepsMax ?? 0).toString();
+    final targetReps =
+        widget.planned.targetRepsMin ?? widget.planned.targetRepsMax;
+    final reps =
+        last?.repsController.text ??
+        (targetReps != null && targetReps > 0 ? '$targetReps' : '');
     final weight = last?.weightController.text ?? '';
     setState(() {
       widget.rows[_key] = [
@@ -281,7 +382,8 @@ class _ExerciseSectionState extends State<_ExerciseSection> {
     final tags = <String>[
       '${strings.targetSetsShort}: ${formatInteger(widget.planned.targetSets, locale: locale)}',
       '${strings.targetRepsShort}: ${widget.planned.repsLabel}',
-      if (widget.planned.targetWeightKg != null && widget.planned.targetWeightKg! > 0)
+      if (widget.planned.targetWeightKg != null &&
+          widget.planned.targetWeightKg! > 0)
         '${strings.targetWeightShort}: ${formatDecimal(widget.planned.targetWeightKg, locale: locale)} kg',
     ];
 
@@ -311,23 +413,20 @@ class _ExerciseSectionState extends State<_ExerciseSection> {
             ),
             IconPill(
               icon: Icons.add,
-              tooltip: strings.addCardio,
+              tooltip: strings.addSet,
               onPressed: _addRow,
             ),
             const SizedBox(width: AppSpacing.xs),
             IconPill(
               icon: Icons.remove,
-              tooltip: strings.cancel,
+              tooltip: strings.removeSet,
               onPressed: _removeRow,
             ),
           ],
         ),
         const SizedBox(height: AppSpacing.xs),
         for (var i = 0; i < _rows.length; i++)
-          _RowWidget(
-            index: i,
-            row: _rows[i],
-          ),
+          _RowWidget(index: i, row: _rows[i]),
         const SizedBox(height: AppSpacing.md),
       ],
     );
@@ -380,19 +479,16 @@ class _RowWidget extends StatelessWidget {
         children: [
           SizedBox(
             width: 64,
-            child: Text(
-              '#${row.setNumber}',
-              style: AppText.secondary,
-            ),
+            child: Text('#${row.setNumber}', style: AppText.secondary),
           ),
           Expanded(
             flex: 3,
             child: TextField(
               controller: row.weightController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              decoration: InputDecoration(
-                hintText: strings.targetWeightShort,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
               ),
+              decoration: InputDecoration(hintText: strings.targetWeightShort),
               textAlign: TextAlign.center,
             ),
           ),

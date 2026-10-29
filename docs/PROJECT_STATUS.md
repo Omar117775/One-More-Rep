@@ -1,11 +1,11 @@
-# One More Rep - Project Status Tracker
+﻿# One More Rep - Project Status Tracker
 
-**Last Updated:** 2026-10-28
+**Last Updated:** 2026-10-29
 **Repository:** D:\\FitnessApp
 **Branch:** main
-**Latest Commit:** ad60b09 Implement P1 backend foundation and authentication
+**Latest Commit:** dc18f19 chore: checkpoint P5 implementation progress
 **Local vs Origin/main:** MATCH (HEAD == origin/main)
-**Uncommitted Changes:** P2-P5 backend, mobile app, tests, and docs (see `git status`); no commits made. Includes P2-P5 migrations, policies, services, controllers, resources, P5 Flutter app, tests, ERD/authorization/API/design docs, and this tracker.
+**Uncommitted Changes:** Post-P5 Flutter hardening only (see `git status`): auth-gate/lifecycle fixes, date-formatting initialization, session editing, progress trends/date caps/field clearing, responsive quick actions, regression tests, and docs. No commits made.
 
 **Evidence Sources:** PROJECT_PLAN.md, AGENTS.md, routes/api.php, migrations, app code, mobile code, tests, git status/log, pint --test, php artisan test/route:list, phpunit PostgreSQL integration suite, flutter analyze/test/build
 
@@ -22,7 +22,7 @@
 | Create Flutter app | COMPLETE | mobile/ exists | Project created |
 | Create Laravel app | COMPLETE | backend/ exists | Laravel app present |
 | Configure PostgreSQL | COMPLETE | config/database.php pgsql, .env DB_CONNECTION=pgsql | Configured |
-| Init Git and publish to GitHub | COMPLETE | git log shows commits, origin/main matches | ad60b09 |
+| Init Git and publish to GitHub | COMPLETE | git log shows commits, origin/main matches | dc18f19 |
 | Document architecture and dev rules | COMPLETE | AGENTS.md exists (root + backend) | Rules documented |
 | Verify env config and security exclusions | COMPLETE | .gitignore excludes .env/vendor/node_modules | Present |
 
@@ -107,7 +107,7 @@
 ## P5 Training System - COMPLETE
 **Objective:** Deliver the training system, cardio, analytics/charts, body-measurement UI, Sparta design system, localization, motion, tests, security review, and documentation.
 
-**Status:** COMPLETE - backend and Flutter P5 scope verified. Full backend suite: 165 tests / 601 assertions. P5 focused suite: 73 tests / 355 assertions. Isolated PostgreSQL integration: 28 tests / 39 assertions. Flutter: 39 tests, clean analysis, successful web build. No commits made.
+**Status:** COMPLETE - backend and Flutter P5 scope verified. Full backend suite: 165 tests / 601 assertions. P5 focused suite: 73 tests / 355 assertions. Isolated PostgreSQL integration: 28 tests / 39 assertions. Flutter: 48 tests (re-run 2026-10-29), clean analysis, successful web build. No commits made.
 
 **Acceptance Criteria (all verified):**
 - [x] **Exercise library:** Public/coach-created visibility is enforced server-side; coaches manage only their own exercises; trainees read public exercises and private exercises from active assignments with an active relationship.
@@ -122,7 +122,7 @@
 - [x] **Motion:** Screen/feedback/chart transitions and a state-driven `CustomPaint` Spartan companion; reduced-motion honored. No suitable Rive character asset exists; no counterfeit asset or unsupported Rive claim.
 - [x] **Localization:** English LTR and Arabic RTL are selectable with centralized typed strings, localized formatting, and primary layouts checked for clipping/overflow.
 - [x] **Backend verification:** Full suite, P5 focused suite, isolated PostgreSQL integration suite, Pint, and 67-route API listing pass with recorded counts.
-- [x] **Flutter verification:** `flutter test` (39), `flutter analyze`, and `flutter build web` pass; the stale scaffold widget test was removed.
+- [x] **Flutter verification:** `flutter test` (39 at P5 sign-off; 48 after 2026-10-29 hardening), `flutter analyze`, and `flutter build web` pass; the stale scaffold widget test was removed.
 - [x] **Security review:** Independent review plus fixes and regression tests; no Critical findings; all High findings fixed. Residual risks documented.
 - [x] **Documentation:** `docs/architecture/P5_TRAINING_AND_PROGRESS.md`, `AUTHORIZATION.md`, `API_CONVENTIONS.md`, `DESIGN_SYSTEM_AND_LOCALIZATION.md`, `ERD.md`, `mobile/P5_NOTES.md`, README, and this tracker updated.
 
@@ -157,6 +157,14 @@
 | Historical performance/progress charts | COMPLETE | `/trainee/analytics`, coach analytics, Flutter charts | Monday weekly buckets, `has_data` |
 | Cardio tracking | COMPLETE | Dated duration/distance/HR API + Flutter UI + tests | Future dates rejected |
 | Body measurements | COMPLETE | P4 API + Flutter dated history/CRUD/charts | History preserved |
+
+### Post-P5 Mobile Hardening (2026-10-29)
+- Fixed `dependOnInheritedWidgetOfExactType` crashes in sign-in and session history; added a stable `AuthGate` so a successful login reliably replaces the splash/sign-in route.
+- Initialized `intl` date formatting for EN/AR at startup; dated screens no longer throw `LocaleDataException`.
+- Added existing-session/set editing from history using `PATCH /trainee/sessions/{session}`.
+- Added progress trend summaries, backend-aligned measurement ranges, today-capped measurement dates, and explicit-null updates that clear removed measurements.
+- Capped cardio date/time selection at now, hardened quick-action tiles for narrow phone widths, and made the splash logo size-bounded and scroll-safe at compact landscape sizes.
+- Added regression tests for the auth gate, session history/edit flow, progress update payload, and progress trends.
 
 ## P6 Subscriptions and Vouchers
 | Task | Status | Evidence | Notes |
@@ -208,7 +216,7 @@
 | Task | Status | Evidence | Notes |
 |------|--------|----------|-------|
 | Automated backend tests | IN PROGRESS | 165 feature/unit tests (601 assertions) + 28 PostgreSQL integration tests (39 assertions) pass | Coverage grows per phase; future domain features remain |
-| Flutter tests and static analysis | IN PROGRESS | `flutter analyze` clean, 39 tests pass, web build succeeds | P5 app baseline covered; future features add coverage |
+| Flutter tests and static analysis | IN PROGRESS | `flutter analyze` clean, 48 tests pass, web build succeeds | P5 app baseline plus post-P5 hardening covered; future features add coverage |
 | Authorization and data-isolation tests | IN PROGRESS | Auth/profile/coach-trainee/P5 training suites; full-suite + integration evidence | Covers endpoints implemented through P5 |
 | Payment and voucher edge-case tests | NOT STARTED | None found | P6 |
 | Production config/backups/monitoring/HTTPS | NOT STARTED | None found | Not started |
@@ -243,7 +251,7 @@
 | P10 | 0 | 0 | 5 | 0 | 0 | NO |
 | P11 | 0 | 3 | 3 | 0 | 0 | NO |
 
-## Actual Test Results (P5 - Verified 2026-10-28)
+## Actual Test Results (P5 - Verified 2026-10-28; mobile re-run 2026-10-29)
 Environment: PHP with `pdo_sqlite`/`sqlite3` for feature tests; isolated PostgreSQL test DB `one_more_rep_test` for integration tests; Flutter on Windows.
 
 | Command | Result |
@@ -253,13 +261,13 @@ Environment: PHP with `pdo_sqlite`/`sqlite3` for feature tests; isolated Postgre
 | `vendor/bin/phpunit -c phpunit.integration.xml` (PostgreSQL) | PASSED - 28 tests, 39 assertions |
 | `vendor/bin/pint --test` | PASSED |
 | `php artisan route:list --path=api/v1 --json` | PASSED - 67 routes |
-| `flutter analyze` | PASSED - No issues found |
-| `flutter test` | PASSED - 39 tests |
-| `flutter build web` | PASSED - `build/web` |
+| `flutter analyze` | PASSED - No issues found (re-run 2026-10-29) |
+| `flutter test` | PASSED - 48 tests (re-run 2026-10-29) |
+| `flutter build web` | PASSED - `build/web` (re-run 2026-10-29) |
 
 **PostgreSQL integration tests:** PASSED on a positively identified, isolated test database. `phpunit.integration.xml` forces `DB_CONNECTION=pgsql_testing` and `DB_TEST_DATABASE=one_more_rep_test`; `IntegrationTestCase` refuses any driver other than `pgsql` and any database name not ending in `_test`. Local test-DB credentials were supplied at runtime from the local `.env` and were never printed or committed. Covers P2-P5 constraints, including training enums, day/order uniqueness, rep/weight/rest ranges, active-assignment uniqueness, session timing, set uniqueness, cardio ranges, and cascades/restricts.
 
-**Flutter verification:** `flutter analyze` clean; 39 tests pass; `flutter build web` succeeds. The obsolete scaffold `mobile/test/widget_test.dart` was removed. Widget tests use fake repositories and do not exercise live networking.
+**Flutter verification:** `flutter analyze` clean; 48 tests pass; `flutter build web` succeeds. The obsolete scaffold `mobile/test/widget_test.dart` was removed. Widget tests use fake repositories and do not exercise live networking.
 
 ### P5 Security Review
 - Independent read-only review found no Critical issues; all High findings were fixed and retested.
@@ -302,7 +310,7 @@ Environment: PHP `D:\php\php.ini` with `pdo_sqlite` and `sqlite3` enabled. Featu
 ## Concise Summary
 - Completed: P1 (6/6), P2 (5/5), P3 (4/4), P4 (4/4), P5 (6/6).
 - In Progress: P7 mobile hardening, P9 audit infrastructure, P11 quality/release, scalability docs/helpers.
-- Tests: 165 backend feature/unit tests passing (601 assertions) on SQLite `:memory:`; 28 PostgreSQL integration tests passing (39 assertions) against isolated `one_more_rep_test`; 39 Flutter tests pass with clean analysis and successful web build.
+- Tests: 165 backend feature/unit tests passing (601 assertions) on SQLite `:memory:`; 28 PostgreSQL integration tests passing (39 assertions) against isolated `one_more_rep_test`; 48 Flutter tests pass with clean analysis and successful web build.
 - Pending/Not Started: P6 subscriptions/vouchers/payments, P8 coach dashboard, P9 admin dashboard, P10 AI, P11 release hardening.
 - Unverified/remaining: load tests (cannot claim 100k users); no third-party security audit; no automated concurrency stress test; mobile auth is in-memory; no Rive character asset.
 - Git: no commits, pushes, or history changes made; all changes remain uncommitted for review.

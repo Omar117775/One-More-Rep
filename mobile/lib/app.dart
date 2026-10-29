@@ -5,13 +5,11 @@ import '../core/app_controller.dart';
 import '../core/app_scope.dart';
 import '../localization/app_strings.dart';
 import '../design/app_theme.dart';
-import 'features/auth/sign_in_screen.dart';
-import 'features/shell/app_shell.dart';
-import 'features/splash/splash_screen.dart';
+import 'features/auth/auth_gate.dart';
 
-/// Root widget: builds theme, localization plumbing and the sign-in gate.
-/// The splash-CTA gate lives in [SplashScreen]; a signed-in session opens
-/// the [AppShell].
+/// Root widget: builds theme, localization plumbing and the auth gate.
+/// [AuthGate] swaps splash / sign-in / shell without pushing routes over the
+/// root, so a successful login always reaches the shell.
 class OneMoreRepApp extends StatelessWidget {
   const OneMoreRepApp({required this.controller, super.key});
 
@@ -43,10 +41,7 @@ class OneMoreRepApp extends StatelessWidget {
                 child: child ?? const SizedBox.shrink(),
               );
             },
-            routes: {
-              '/sign-in': (context) => const SignInScreen(),
-            },
-            home: controller.isSignedIn ? const AppShell() : const SplashScreen(),
+            home: const AuthGate(),
           );
         },
       ),

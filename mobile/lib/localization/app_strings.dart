@@ -1,4 +1,4 @@
-﻿import 'package:flutter/widgets.dart';
+import 'package:flutter/widgets.dart';
 
 /// Centralized English/Arabic strings. A simple typed strings map on purpose:
 /// Flutter's built-in delegates handle localization plumbing, this only holds copy.
@@ -70,6 +70,10 @@ class AppStrings {
     required this.notesHint,
     required this.finishSession,
     required this.saveDraft,
+    required this.saveChanges,
+    required this.editSession,
+    required this.addSet,
+    required this.removeSet,
     required this.deleteSession,
     required this.deleteSessionConfirm,
     required this.sessionsEmpty,
@@ -106,6 +110,10 @@ class AppStrings {
     required this.chartBodyWeight,
     required this.chartWorkoutVolume,
     required this.chartCardioDuration,
+    required this.trendOver,
+    required this.trendVsFirstWeek,
+    required this.trendSteady,
+    required this.trendNoComparison,
     required this.addMeasurement,
     required this.editMeasurement,
     required this.weightKg,
@@ -223,6 +231,10 @@ class AppStrings {
   final String notesHint;
   final String finishSession;
   final String saveDraft;
+  final String saveChanges;
+  final String editSession;
+  final String addSet;
+  final String removeSet;
   final String deleteSession;
   final String deleteSessionConfirm;
   final String sessionsEmpty;
@@ -263,6 +275,10 @@ class AppStrings {
   final String chartBodyWeight;
   final String chartWorkoutVolume;
   final String chartCardioDuration;
+  final String trendOver;
+  final String trendVsFirstWeek;
+  final String trendSteady;
+  final String trendNoComparison;
   final String addMeasurement;
   final String editMeasurement;
   final String weightKg;
@@ -313,14 +329,17 @@ class AppStrings {
 
   /// Looks up the strings installed by [AppStringsScope]; falls back to English.
   static AppStrings of(BuildContext context) {
-    final scope =
-        context.dependOnInheritedWidgetOfExactType<AppStringsScope>();
+    final scope = context.dependOnInheritedWidgetOfExactType<AppStringsScope>();
     return scope?.strings ?? fallback;
   }
 }
 
 class AppStringsScope extends InheritedWidget {
-  const AppStringsScope({required this.strings, required super.child, super.key});
+  const AppStringsScope({
+    required this.strings,
+    required super.child,
+    super.key,
+  });
 
   final AppStrings strings;
 
@@ -396,8 +415,13 @@ const _en = AppStrings(
   notesHint: 'How did it feel? Any adjustments?',
   finishSession: 'Finish session',
   saveDraft: 'Save in progress',
+  saveChanges: 'Save changes',
+  editSession: 'Edit session',
+  addSet: 'Add set',
+  removeSet: 'Remove set',
   deleteSession: 'Delete session',
-  deleteSessionConfirm: 'Delete this training session? Logged sets will be removed.',
+  deleteSessionConfirm:
+      'Delete this training session? Logged sets will be removed.',
   sessionsEmpty: 'No sessions yet',
   sessionsEmptySub: 'Start a session from one of your program days.',
   sessionStartedAt: 'Started',
@@ -432,6 +456,10 @@ const _en = AppStrings(
   chartBodyWeight: 'Body weight',
   chartWorkoutVolume: 'Workout volume',
   chartCardioDuration: 'Cardio duration',
+  trendOver: 'over',
+  trendVsFirstWeek: 'vs first week',
+  trendSteady: 'Steady',
+  trendNoComparison: 'Not enough data to compare yet',
   addMeasurement: 'Add measurement',
   editMeasurement: 'Edit measurement',
   weightKg: 'WEIGHT (KG)',
@@ -442,7 +470,8 @@ const _en = AppStrings(
   measuredOn: 'MEASURED ON',
   measurementsHeader: 'MEASUREMENTS',
   measurementsEmpty: 'No measurements yet',
-  measurementsEmptySub: 'Log your weight and measurements to see trends over time.',
+  measurementsEmptySub:
+      'Log your weight and measurements to see trends over time.',
   deleteMeasurement: 'Delete measurement',
   deleteMeasurementConfirm: 'Delete this measurement record?',
   settingsTitle: 'Settings',
@@ -540,6 +569,10 @@ const _ar = AppStrings(
   notesHint: 'كيف كان حاسسك؟ أي تعديلات؟',
   finishSession: 'إنهاء الجلسة',
   saveDraft: 'حفظ كجلسة جارية',
+  saveChanges: 'حفظ التعديلات',
+  editSession: 'تعديل الجلسة',
+  addSet: 'إضافة مجموعة',
+  removeSet: 'حذف مجموعة',
   deleteSession: 'حذف الجلسة',
   deleteSessionConfirm: 'حذف جلسة التدريب هذه؟ ستُحذف المجموعات المسجلة.',
   sessionsEmpty: 'لا جلسات بعد',
@@ -576,6 +609,10 @@ const _ar = AppStrings(
   chartBodyWeight: 'وزن الجسم',
   chartWorkoutVolume: 'حجم التمارين',
   chartCardioDuration: 'مدة الكارديو',
+  trendOver: 'خلال',
+  trendVsFirstWeek: 'مقارنة بالأسبوع الأول',
+  trendSteady: 'مستقر',
+  trendNoComparison: 'لا توجد بيانات كافية للمقارنة بعد',
   addMeasurement: 'أضف قياساً',
   editMeasurement: 'تعديل القياس',
   weightKg: 'الوزن (كغ)',

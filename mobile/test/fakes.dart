@@ -18,6 +18,10 @@ class FakeTrainRepository implements TrainRepository {
 
   List<Assignment> assignmentsToReturn;
   List<WorkoutSessionModel> sessionsToReturn;
+  Object? lastUpdatedSessionId;
+  String? lastUpdateNotes;
+  List<Map<String, dynamic>>? lastUpdateSets;
+  DateTime? lastUpdateCompletedAt;
 
   @override
   Future<List<Assignment>> assignments() async => assignmentsToReturn;
@@ -32,8 +36,7 @@ class FakeTrainRepository implements TrainRepository {
     DateTime? completedAt,
     String? notes,
     required List<Map<String, dynamic>> sets,
-  }) =>
-      throw UnimplementedError();
+  }) => throw UnimplementedError();
 
   @override
   Future<bool> deleteSession(Object? sessionId) async => true;
@@ -45,8 +48,51 @@ class FakeTrainRepository implements TrainRepository {
     DateTime? completedAt,
     String? notes,
     List<Map<String, dynamic>>? sets,
-  }) =>
-      throw UnimplementedError();
+  }) async {
+    lastUpdatedSessionId = sessionId;
+    lastUpdateNotes = notes;
+    lastUpdateSets = sets;
+    lastUpdateCompletedAt = completedAt;
+    WorkoutSessionModel? existing;
+    for (final session in sessionsToReturn) {
+      if (session.id == sessionId) existing = session;
+    }
+    final updatedSets = sets == null
+        ? existing?.sets ?? const <SessionSet>[]
+        : [
+            for (final raw in sets)
+              SessionSet(
+                id: raw['id'],
+                exerciseId: raw['exercise_id'],
+                setNumber: (raw['set_number'] as num?)?.toInt() ?? 0,
+                weightKg: (raw['weight_kg'] as num?)?.toDouble(),
+                reps: (raw['reps'] as num?)?.toInt() ?? 0,
+                isCompleted: raw['is_completed'] as bool? ?? true,
+                exercise: _exerciseFor(existing, raw['exercise_id']),
+              ),
+          ];
+    final updated = WorkoutSessionModel(
+      id: sessionId,
+      workoutAssignmentId: existing?.workoutAssignmentId,
+      traineeId: existing?.traineeId,
+      startedAt: startedAt ?? existing?.startedAt,
+      completedAt: completedAt ?? existing?.completedAt,
+      notes: notes ?? existing?.notes,
+      sets: updatedSets,
+    );
+    sessionsToReturn = [
+      for (final session in sessionsToReturn)
+        if (session.id == sessionId) updated else session,
+    ];
+    return updated;
+  }
+
+  ExerciseInfo _exerciseFor(WorkoutSessionModel? session, Object? exerciseId) {
+    for (final set in session?.sets ?? const <SessionSet>[]) {
+      if (set.exerciseId == exerciseId) return set.exercise;
+    }
+    return ExerciseInfo(id: exerciseId);
+  }
 }
 
 class FakeAnalyticsRepository implements AnalyticsRepository {
@@ -55,7 +101,10 @@ class FakeAnalyticsRepository implements AnalyticsRepository {
   AnalyticsSummary? summary;
 
   @override
-  Future<AnalyticsSummary> fetch({required DateTime from, required DateTime to}) async =>
+  Future<AnalyticsSummary> fetch({
+    required DateTime from,
+    required DateTime to,
+  }) async =>
       summary ??
       const AnalyticsSummary(
         from: null,
@@ -234,7 +283,8 @@ Assignment testAssignment({
                   'name': 'Bench Press',
                   'muscle_group': 'chest',
                   'equipment': 'barbell',
-                  'instructions': 'Lower to mid-chest, drive through the floor.',
+                  'instructions':
+                      'Lower to mid-chest, drive through the floor.',
                 },
               },
             ],
@@ -245,11 +295,11 @@ Assignment testAssignment({
 }
 
 User testUser() => User(
-      id: 7,
-      name: 'Leonidas',
-      email: 'test@example.com',
-      roles: const ['trainee'],
-    );
+  id: 7,
+  name: 'Leonidas',
+  email: 'test@example.com',
+  roles: const ['trainee'],
+);
 
 WorkoutSessionModel testSession({String? completedAt, int setCount = 2}) =>
     WorkoutSessionModel.fromJson({

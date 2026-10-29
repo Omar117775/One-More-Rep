@@ -34,18 +34,18 @@ class ProgressFormScreen extends StatefulWidget {
 }
 
 class _ProgressFormScreenState extends State<ProgressFormScreen> {
+  // Ranges mirror Update/StoreBodyMeasurementRequest on the backend.
   static const _measurementFields = [
-    _FieldSpec(_Field.weight),
-    _FieldSpec(_Field.bodyFat),
-    _FieldSpec(_Field.waist),
-    _FieldSpec(_Field.chest),
-    _FieldSpec(_Field.arm),
+    _FieldSpec(_Field.weight, min: 20, max: 500),
+    _FieldSpec(_Field.bodyFat, min: 0, max: 100),
+    _FieldSpec(_Field.waist, min: 20, max: 300),
+    _FieldSpec(_Field.chest, min: 20, max: 300),
+    _FieldSpec(_Field.arm, min: 5, max: 150),
   ];
 
   final _formKey = GlobalKey<FormState>();
   final Map<_Field, TextEditingController> _controllers = {
-    for (final spec in _measurementFields)
-      spec.field: TextEditingController(),
+    for (final spec in _measurementFields) spec.field: TextEditingController(),
   };
   DateTime _measuredOn = DateTime.now();
   bool _saving = false;
@@ -69,7 +69,13 @@ class _ProgressFormScreenState extends State<ProgressFormScreen> {
     fill(_Field.waist, entry.waistCm);
     fill(_Field.chest, entry.chestCm);
     fill(_Field.arm, entry.armCm);
-    _measuredOn = entry.measuredOn.toLocal();
+    // `measured_on` is a calendar date. Rebuild it from its components instead
+    // of converting UTC midnight, which can shift to the previous day locally.
+    _measuredOn = DateTime(
+      entry.measuredOn.year,
+      entry.measuredOn.month,
+      entry.measuredOn.day,
+    );
   }
 
   @override
@@ -80,11 +86,13 @@ class _ProgressFormScreenState extends State<ProgressFormScreen> {
     super.dispose();
   }
 
-  String? _validateOptional(String? value) {
+  String? _validateOptional(_FieldSpec spec, String? value) {
     final strings = AppStrings.of(context);
     if ((value ?? '').trim().isEmpty) return null;
     final parsed = parseDecimal(value);
-    if (parsed == null || parsed <= 0) return strings.invalidNumber;
+    if (parsed == null || parsed < spec.min || parsed > spec.max) {
+      return strings.invalidNumber;
+    }
     return null;
   }
 
@@ -99,7 +107,11 @@ class _ProgressFormScreenState extends State<ProgressFormScreen> {
     final waist = valueFor(_Field.waist);
     final chest = valueFor(_Field.chest);
     final arm = valueFor(_Field.arm);
-    if (weight == null && bodyFat == null && waist == null && chest == null && arm == null) {
+    if (weight == null &&
+        bodyFat == null &&
+        waist == null &&
+        chest == null &&
+        arm == null) {
       setState(() => _errorText = strings.requiredField);
       return;
     }
@@ -145,7 +157,11 @@ class _ProgressFormScreenState extends State<ProgressFormScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.entry == null ? strings.addMeasurement : strings.editMeasurement),
+        title: Text(
+          widget.entry == null
+              ? strings.addMeasurement
+              : strings.editMeasurement,
+        ),
       ),
       body: Form(
         key: _formKey,
@@ -163,16 +179,21 @@ class _ProgressFormScreenState extends State<ProgressFormScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
               ),
               onPressed: () async {
+                final today = DateUtils.dateOnly(DateTime.now());
+                final selected = DateUtils.dateOnly(_measuredOn);
                 final picked = await showDatePicker(
                   context: context,
-                  initialDate: _measuredOn,
+                  initialDate: selected.isAfter(today) ? today : selected,
                   firstDate: DateTime(2000),
-                  lastDate: DateTime.now().add(const Duration(days: 1)),
+                  lastDate: today,
                 );
                 if (picked != null) setState(() => _measuredOn = picked);
               },
               icon: const Icon(Icons.event_outlined, size: 20),
-              label: Text(formatDate(_measuredOn, locale: locale), style: AppText.body),
+              label: Text(
+                formatDate(_measuredOn, locale: locale),
+                style: AppText.body,
+              ),
             ),
             const SizedBox(height: AppSpacing.md),
             for (final spec in _measurementFields)
@@ -181,16 +202,22 @@ class _ProgressFormScreenState extends State<ProgressFormScreen> {
                 child: OmrTextField(
                   label: labels[spec.field]!,
                   controller: _controllers[spec.field],
-                  keyboardType:
-                      const TextInputType.numberWithOptions(decimal: true),
-                  validator: _validateOptional,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  validator: (value) => _validateOptional(spec, value),
                 ),
               ),
             if (_errorText != null)
-              Text(_errorText!, style: AppText.secondary.copyWith(color: AppColors.danger)),
+              Text(
+                _errorText!,
+                style: AppText.secondary.copyWith(color: AppColors.danger),
+              ),
             const SizedBox(height: AppSpacing.lg),
             PrimaryButton(
-              label: widget.entry == null ? strings.addMeasurement : strings.editMeasurement,
+              label: widget.entry == null
+                  ? strings.addMeasurement
+                  : strings.editMeasurement,
               loading: _saving,
               onPressed: _saving ? null : _submit,
             ),
@@ -205,7 +232,9 @@ class _ProgressFormScreenState extends State<ProgressFormScreen> {
 enum _Field { weight, bodyFat, waist, chest, arm }
 
 class _FieldSpec {
-  const _FieldSpec(this.field);
+  const _FieldSpec(this.field, {required this.min, required this.max});
 
   final _Field field;
+  final double min;
+  final double max;
 }

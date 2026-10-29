@@ -1,4 +1,4 @@
-# P5 — Flutter Trainee App (One More Rep)
+﻿# P5 — Flutter Trainee App (One More Rep)
 
 ## Scope delivered
 Full trainee mobile app in `D:\FitnessApp\mobile` wired to the Laravel REST API:
@@ -21,11 +21,19 @@ Full trainee mobile app in `D:\FitnessApp\mobile` wired to the Laravel REST API:
 - `lib/data` — freezed-style hand-written models with tolerant `fromJson`; repositories per domain with pagination helper (per_page=50, capped at 10 pages).
 - Screens stay thin; business rules live in the Laravel backend.
 
-## Verification (run 2026-10-28)
+## Verification (re-run 2026-10-29)
 - `flutter analyze` — **No issues found!**
-- `flutter test` — **39 passing, 0 failing** (auth repo, model parsing, form validation, home, charts, Spartan companion, RTL/localization).
+- `flutter test` — **48 passing, 0 failing** (auth repo, model parsing, form validation, home, charts, Spartan companion, RTL/localization, sign-in lifecycle, session editing, progress repository/trends).
 - `flutter build web` — success (`build/web`); note: `http.Client` is used on real devices only.
 - Backend P5 API/security/verification evidence: `../docs/architecture/P5_TRAINING_AND_PROGRESS.md`.
+
+## Post-P5 mobile hardening (2026-10-29)
+- Replaced the pushed sign-in route with a stable `AuthGate`; sign-in and session history now read `AppScope` in `didChangeDependencies`, fixing `dependOnInheritedWidgetOfExactType` lifecycle crashes.
+- Initialized `intl` date formatting for EN/AR at startup (dated screens previously threw `LocaleDataException`).
+- Added editing of existing workout sessions/sets from history, reusing the session logger.
+- Added progress trend summaries, backend-aligned measurement ranges, today/now date caps, and explicit-null updates so cleared measurement fields actually clear.
+- Hardened quick-action tiles for narrow phones (single-line label + tooltip) and made the splash logo size-bounded and scroll-safe at compact landscape sizes.
+- Added regression tests for the auth gate, splash responsiveness, session history/edit flow, progress update payloads, and trends.
 
 ## Known limitations / honest notes
 - API base defaults to `10.0.2.2` (Android emulator loopback); change it in Settings or via `--dart-define=OMR_API_BASE_URL=...`.

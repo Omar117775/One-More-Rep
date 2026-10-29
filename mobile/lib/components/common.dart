@@ -31,7 +31,11 @@ class OmrCard extends StatelessWidget {
       color: Colors.transparent,
       borderRadius: BorderRadius.circular(AppRadii.md),
       clipBehavior: Clip.antiAlias,
-      child: InkWell(onTap: onTap, borderRadius: BorderRadius.circular(AppRadii.md), child: card),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppRadii.md),
+        child: card,
+      ),
     );
   }
 }
@@ -149,15 +153,21 @@ class QuickActionTile extends StatelessWidget {
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, color: AppColors.blueLight, size: 26),
-              const SizedBox(height: AppSpacing.xs),
-              Text(
-                label,
-                style: AppText.secondary,
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+              Icon(icon, color: AppColors.blueLight, size: 22),
+              const SizedBox(height: 4),
+              // Single line keeps the tile usable at narrow phone widths where
+              // the grid cell is short; the full label remains in the tooltip.
+              Tooltip(
+                message: label,
+                child: Text(
+                  label,
+                  style: AppText.secondary.copyWith(fontSize: 12),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ],
           ),
@@ -169,7 +179,12 @@ class QuickActionTile extends StatelessWidget {
 
 /// Icon pill button (edit/delete confirm rows), 44dp touch target.
 class IconPill extends StatelessWidget {
-  const IconPill({required this.icon, required this.tooltip, this.onPressed, super.key});
+  const IconPill({
+    required this.icon,
+    required this.tooltip,
+    this.onPressed,
+    super.key,
+  });
 
   final IconData icon;
   final String tooltip;
@@ -225,7 +240,10 @@ class OmrTextField extends StatelessWidget {
           keyboardType: keyboardType,
           obscureText: obscure,
           autovalidateMode: autoValidate ?? AutovalidateMode.onUserInteraction,
-          decoration: InputDecoration(hintText: hintText, suffixIcon: suffixIcon),
+          decoration: InputDecoration(
+            hintText: hintText,
+            suffixIcon: suffixIcon,
+          ),
         ),
       ],
     );

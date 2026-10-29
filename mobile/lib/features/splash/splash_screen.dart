@@ -1,19 +1,24 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../../design/tokens.dart';
 import '../../localization/app_strings.dart';
-import '../auth/sign_in_screen.dart';
 
 /// Premium splash: logo, glow, title, tagline and CTA into the sign-in gate.
 /// Visual language preserved from the original splash; strings centralized.
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+  const SplashScreen({required this.onEnterArena, super.key});
+
+  /// The root widget owns the auth gate; the splash only asks to show sign-in.
+  final VoidCallback onEnterArena;
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen>
+    with TickerProviderStateMixin {
   late final AnimationController _entranceController;
   late final AnimationController _glowController;
 
@@ -30,8 +35,14 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
   void initState() {
     super.initState();
 
-    _entranceController = AnimationController(vsync: this, duration: AppDurations.entrance);
-    _glowController = AnimationController(vsync: this, duration: const Duration(milliseconds: 2400));
+    _entranceController = AnimationController(
+      vsync: this,
+      duration: AppDurations.entrance,
+    );
+    _glowController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2400),
+    );
 
     _logoOpacity = CurvedAnimation(
       parent: _entranceController,
@@ -43,22 +54,24 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
         curve: const Interval(0.0, 0.72, curve: Curves.easeOutCubic),
       ),
     );
-    _logoSlide = Tween<Offset>(begin: const Offset(0, 0.045), end: Offset.zero).animate(
-      CurvedAnimation(
-        parent: _entranceController,
-        curve: const Interval(0.0, 0.68, curve: Curves.easeOutCubic),
-      ),
-    );
+    _logoSlide = Tween<Offset>(begin: const Offset(0, 0.045), end: Offset.zero)
+        .animate(
+          CurvedAnimation(
+            parent: _entranceController,
+            curve: const Interval(0.0, 0.68, curve: Curves.easeOutCubic),
+          ),
+        );
     _titleOpacity = CurvedAnimation(
       parent: _entranceController,
       curve: const Interval(0.38, 0.82, curve: Curves.easeOut),
     );
-    _titleSlide = Tween<Offset>(begin: const Offset(0, 0.28), end: Offset.zero).animate(
-      CurvedAnimation(
-        parent: _entranceController,
-        curve: const Interval(0.38, 0.84, curve: Curves.easeOutCubic),
-      ),
-    );
+    _titleSlide = Tween<Offset>(begin: const Offset(0, 0.28), end: Offset.zero)
+        .animate(
+          CurvedAnimation(
+            parent: _entranceController,
+            curve: const Interval(0.38, 0.84, curve: Curves.easeOutCubic),
+          ),
+        );
     _subtitleOpacity = CurvedAnimation(
       parent: _entranceController,
       curve: const Interval(0.65, 1.0, curve: Curves.easeOut),
@@ -92,105 +105,125 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
           const Positioned.fill(child: _AmbientBackground()),
           SafeArea(
             child: AnimatedBuilder(
-              animation: Listenable.merge([_entranceController, _glowController]),
+              animation: Listenable.merge([
+                _entranceController,
+                _glowController,
+              ]),
               builder: (context, _) {
                 final glow = 0.12 + (_glowController.value * 0.12);
-                return Column(
-                  children: [
-                    const Spacer(flex: 2),
-                    Transform.translate(
-                      offset: _logoSlide.value * 100,
-                      child: Transform.scale(
-                        scale: _logoScale.value,
-                        child: Opacity(
-                          opacity: _logoOpacity.value,
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 28),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(AppRadii.lg),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppColors.blue.withValues(alpha: glow),
-                                  blurRadius: 42,
-                                  spreadRadius: 2,
-                                ),
-                              ],
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(AppRadii.lg),
-                              child: AspectRatio(
-                                aspectRatio: 1,
-                                child: Image.asset(
-                                  'assets/images/logo.jpg',
-                                  fit: BoxFit.contain,
-                                  errorBuilder: (context, error, _) =>
-                                      const _LogoFallback(),
-                                ),
-                              ),
-                            ),
-                          ),
+                return LayoutBuilder(
+                  builder: (context, constraints) {
+                    // Keep the logo bounded by both axes so compact landscape
+                    // windows do not overflow; the page scrolls as a fallback.
+                    final logoSize = math
+                        .min(
+                          constraints.maxWidth - 56,
+                          constraints.maxHeight * 0.42,
+                        )
+                        .clamp(96.0, 360.0);
+                    return SingleChildScrollView(
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minHeight: constraints.maxHeight,
                         ),
-                      ),
-                    ),
-                    const SizedBox(height: 34),
-                    SlideTransition(
-                      position: _titleSlide,
-                      child: Opacity(
-                        opacity: _titleOpacity.value,
-                        child: Text(
-                          'ONE MORE REP',
-                          textAlign: TextAlign.center,
-                          style: AppText.display,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 9),
-                    Opacity(
-                      opacity: _subtitleOpacity.value,
-                      child: Text(
-                        strings.splashTagline.toUpperCase(),
-                        textAlign: TextAlign.center,
-                        style: AppText.microLabel.copyWith(fontSize: 11, letterSpacing: 2.4),
-                      ),
-                    ),
-                    const Spacer(flex: 2),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(28, 0, 28, 28),
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            width: double.infinity,
-                            height: 56,
-                            child: FilledButton(
-                              onPressed: () {
-                                Navigator.of(context).push(
-                                  PageRouteBuilder<void>(
-                                    pageBuilder: (_, animation, _) => FadeTransition(
-                                      opacity: CurvedAnimation(
-                                        parent: animation,
-                                        curve: Curves.easeOutCubic,
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(28, 16, 28, 28),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                children: [
+                                  Transform.translate(
+                                    offset: _logoSlide.value * 100,
+                                    child: Transform.scale(
+                                      scale: _logoScale.value,
+                                      child: Opacity(
+                                        opacity: _logoOpacity.value,
+                                        child: Container(
+                                          width: logoSize,
+                                          height: logoSize,
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(
+                                              AppRadii.lg,
+                                            ),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: AppColors.blue
+                                                    .withValues(alpha: glow),
+                                                blurRadius: 42,
+                                                spreadRadius: 2,
+                                              ),
+                                            ],
+                                          ),
+                                          child: ClipRRect(
+                                            borderRadius: BorderRadius.circular(
+                                              AppRadii.lg,
+                                            ),
+                                            child: Image.asset(
+                                              'assets/images/logo.jpg',
+                                              fit: BoxFit.contain,
+                                              errorBuilder: (
+                                                context,
+                                                error,
+                                                _,
+                                              ) => const _LogoFallback(),
+                                            ),
+                                          ),
+                                        ),
                                       ),
-                                      child: const SignInScreen(),
                                     ),
-                                    transitionDuration: AppDurations.page,
-                                    reverseTransitionDuration: AppDurations.page,
                                   ),
-                                );
-                              },
-                              child: Text(strings.splashCta),
-                            ),
+                                  const SizedBox(height: 28),
+                                  SlideTransition(
+                                    position: _titleSlide,
+                                    child: Opacity(
+                                      opacity: _titleOpacity.value,
+                                      child: Text(
+                                        'ONE MORE REP',
+                                        textAlign: TextAlign.center,
+                                        style: AppText.display,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 9),
+                                  Opacity(
+                                    opacity: _subtitleOpacity.value,
+                                    child: Text(
+                                      strings.splashTagline.toUpperCase(),
+                                      textAlign: TextAlign.center,
+                                      style: AppText.microLabel.copyWith(
+                                        fontSize: 11,
+                                        letterSpacing: 2.4,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Column(
+                                children: [
+                                  SizedBox(
+                                    width: double.infinity,
+                                    height: 56,
+                                    child: FilledButton(
+                                      onPressed: widget.onEnterArena,
+                                      child: Text(strings.splashCta),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    strings.splashMotto,
+                                    textAlign: TextAlign.center,
+                                    style: AppText.microLabel,
+                                  ),
+                                  const SizedBox(height: 10),
+                                ],
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 16),
-                          Text(
-                            strings.splashMotto,
-                            textAlign: TextAlign.center,
-                            style: AppText.microLabel,
-                          ),
-                          const SizedBox(height: 10),
-                        ],
+                        ),
                       ),
-                    ),
-                  ],
+                    );
+                  },
                 );
               },
             ),

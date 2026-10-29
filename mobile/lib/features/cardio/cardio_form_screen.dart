@@ -60,8 +60,9 @@ class _CardioFormScreenState extends State<CardioFormScreen> {
     }
   }
 
-  String _trimNumber(double value) =>
-      value == value.roundToDouble() ? value.toStringAsFixed(0) : value.toString();
+  String _trimNumber(double value) => value == value.roundToDouble()
+      ? value.toStringAsFixed(0)
+      : value.toString();
 
   @override
   void dispose() {
@@ -128,7 +129,9 @@ class _CardioFormScreenState extends State<CardioFormScreen> {
     final strings = AppStrings.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.entry == null ? strings.addCardio : strings.editCardio),
+        title: Text(
+          widget.entry == null ? strings.addCardio : strings.editCardio,
+        ),
       ),
       body: Form(
         key: _formKey,
@@ -165,14 +168,18 @@ class _CardioFormScreenState extends State<CardioFormScreen> {
             OmrTextField(
               label: strings.durationMinutes,
               controller: _duration,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               validator: _validateRequiredNumber,
             ),
             const SizedBox(height: AppSpacing.md),
             OmrTextField(
               label: strings.distanceKm,
               controller: _distanceController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               validator: _validateOptionalNumber,
             ),
             const SizedBox(height: AppSpacing.md),
@@ -193,11 +200,16 @@ class _CardioFormScreenState extends State<CardioFormScreen> {
             ),
             if (_errorText != null) ...[
               const SizedBox(height: AppSpacing.md),
-              Text(_errorText!, style: AppText.secondary.copyWith(color: AppColors.danger)),
+              Text(
+                _errorText!,
+                style: AppText.secondary.copyWith(color: AppColors.danger),
+              ),
             ],
             const SizedBox(height: AppSpacing.xl),
             PrimaryButton(
-              label: widget.entry == null ? strings.addCardio : strings.editCardio,
+              label: widget.entry == null
+                  ? strings.addCardio
+                  : strings.editCardio,
               loading: _saving,
               onPressed: _saving ? null : _submit,
             ),
@@ -237,11 +249,13 @@ class _DateRow extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
           ),
           onPressed: () async {
+            final now = DateTime.now();
+            final today = DateUtils.dateOnly(now);
             final date = await showDatePicker(
               context: context,
-              initialDate: value,
+              initialDate: value.isAfter(today) ? today : value,
               firstDate: DateTime(2000),
-              lastDate: DateTime.now().add(const Duration(days: 1)),
+              lastDate: today,
             );
             if (date == null || !context.mounted) return;
             final time = await showTimePicker(
@@ -249,7 +263,11 @@ class _DateRow extends StatelessWidget {
               initialTime: TimeOfDay.fromDateTime(value),
             );
             if (time == null) return;
-            final picked = date.add(Duration(hours: time.hour, minutes: time.minute));
+            var picked = date.add(
+              Duration(hours: time.hour, minutes: time.minute),
+            );
+            // The backend rejects performed_at values in the future.
+            if (picked.isAfter(now)) picked = now;
             onChanged(picked);
           },
           icon: const Icon(Icons.event_outlined, size: 20),
