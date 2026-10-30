@@ -21,8 +21,9 @@ AppController _controller() {
 }
 
 void main() {
-  testWidgets('Arabic locale renders RTL across the shell and home screens',
-      (tester) async {
+  testWidgets('Arabic locale renders RTL across the shell and home screens', (
+    tester,
+  ) async {
     final controller = _controller()..setLocale(const Locale('ar'));
     await tester.pumpWidget(OneMoreRepApp(controller: controller));
     await tester.pump(const Duration(milliseconds: 120));
@@ -41,8 +42,9 @@ void main() {
     expect(dirArabic, TextDirection.rtl);
   });
 
-  testWidgets('toggling language from Arabic back to English restores LTR',
-      (tester) async {
+  testWidgets('toggling language from Arabic back to English restores LTR', (
+    tester,
+  ) async {
     final controller = _controller()..setLocale(const Locale('ar'));
     await tester.pumpWidget(OneMoreRepApp(controller: controller));
     await tester.pump(const Duration(milliseconds: 400));
@@ -96,14 +98,8 @@ void main() {
         'workouts': {
           'has_data': true,
           'weekly': [
-            {
-              'week_start': '2026-04-27',
-              'volume_kg': '600.0',
-            },
-            {
-              'week_start': '2026-05-04',
-              'volume_kg': '800.0',
-            },
+            {'week_start': '2026-04-27', 'volume_kg': '600.0'},
+            {'week_start': '2026-05-04', 'volume_kg': '800.0'},
           ],
         },
       });

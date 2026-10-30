@@ -2,11 +2,12 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../../design/brand/animated_spartan_mark.dart';
 import '../../design/tokens.dart';
 import '../../localization/app_strings.dart';
 
-/// Premium splash: logo, glow, title, tagline and CTA into the sign-in gate.
-/// Visual language preserved from the original splash; strings centralized.
+/// Premium splash: animated spartan emblem over a black-black ambient scene
+/// with rising ember particles, glow, title, tagline and CTA into sign-in.
 class SplashScreen extends StatefulWidget {
   const SplashScreen({required this.onEnterArena, super.key});
 
@@ -20,14 +21,12 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen>
     with TickerProviderStateMixin {
   late final AnimationController _entranceController;
-  late final AnimationController _glowController;
+  late final AnimationController _emberController;
 
-  late final Animation<double> _logoOpacity;
-  late final Animation<double> _logoScale;
-  late final Animation<Offset> _logoSlide;
   late final Animation<double> _titleOpacity;
   late final Animation<Offset> _titleSlide;
   late final Animation<double> _subtitleOpacity;
+  late final Animation<double> _ctaOpacity;
 
   bool _motionStarted = false;
 
@@ -39,49 +38,36 @@ class _SplashScreenState extends State<SplashScreen>
       vsync: this,
       duration: AppDurations.entrance,
     );
-    _glowController = AnimationController(
+    _emberController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 2400),
+      duration: const Duration(milliseconds: 14000),
     );
 
-    _logoOpacity = CurvedAnimation(
-      parent: _entranceController,
-      curve: const Interval(0.0, 0.58, curve: Curves.easeOut),
-    );
-    _logoScale = Tween<double>(begin: 0.88, end: 1).animate(
-      CurvedAnimation(
-        parent: _entranceController,
-        curve: const Interval(0.0, 0.72, curve: Curves.easeOutCubic),
-      ),
-    );
-    _logoSlide = Tween<Offset>(begin: const Offset(0, 0.045), end: Offset.zero)
-        .animate(
-          CurvedAnimation(
-            parent: _entranceController,
-            curve: const Interval(0.0, 0.68, curve: Curves.easeOutCubic),
-          ),
-        );
     _titleOpacity = CurvedAnimation(
       parent: _entranceController,
-      curve: const Interval(0.38, 0.82, curve: Curves.easeOut),
+      curve: const Interval(0.15, 0.78, curve: Curves.easeOut),
     );
-    _titleSlide = Tween<Offset>(begin: const Offset(0, 0.28), end: Offset.zero)
+    _titleSlide = Tween<Offset>(begin: const Offset(0, 0.24), end: Offset.zero)
         .animate(
           CurvedAnimation(
             parent: _entranceController,
-            curve: const Interval(0.38, 0.84, curve: Curves.easeOutCubic),
+            curve: const Interval(0.15, 0.8, curve: Curves.easeOutCubic),
           ),
         );
     _subtitleOpacity = CurvedAnimation(
       parent: _entranceController,
-      curve: const Interval(0.65, 1.0, curve: Curves.easeOut),
+      curve: const Interval(0.38, 0.9, curve: Curves.easeOut),
+    );
+    _ctaOpacity = CurvedAnimation(
+      parent: _entranceController,
+      curve: const Interval(0.6, 1.0, curve: Curves.easeOut),
     );
   }
 
   @override
   void dispose() {
     _entranceController.dispose();
-    _glowController.dispose();
+    _emberController.dispose();
     super.dispose();
   }
 
@@ -92,10 +78,10 @@ class _SplashScreenState extends State<SplashScreen>
     if (animate && !_motionStarted) {
       _motionStarted = true;
       _entranceController.forward();
-      _glowController.repeat(reverse: true);
+      _emberController.repeat();
     }
     if (!animate) {
-      _glowController.stop();
+      _emberController.stop();
       _entranceController.value = 1;
     }
 
@@ -103,76 +89,37 @@ class _SplashScreenState extends State<SplashScreen>
       body: Stack(
         children: [
           const Positioned.fill(child: _AmbientBackground()),
+          Positioned.fill(
+            child: _EmberCanvas(controller: _emberController),
+          ),
           SafeArea(
             child: AnimatedBuilder(
-              animation: Listenable.merge([
-                _entranceController,
-                _glowController,
-              ]),
+              animation: _entranceController,
               builder: (context, _) {
-                final glow = 0.12 + (_glowController.value * 0.12);
                 return LayoutBuilder(
                   builder: (context, constraints) {
-                    // Keep the logo bounded by both axes so compact landscape
-                    // windows do not overflow; the page scrolls as a fallback.
-                    final logoSize = math
+                    // Keep the emblem bounded by both axes so compact
+                    // landscape windows do not overflow; the page scrolls
+                    // as a fallback.
+                    final emblemSize = math
                         .min(
-                          constraints.maxWidth - 56,
-                          constraints.maxHeight * 0.42,
+                          constraints.maxWidth - 72,
+                          constraints.maxHeight * 0.46,
                         )
-                        .clamp(96.0, 360.0);
+                        .clamp(88.0, 380.0);
                     return SingleChildScrollView(
                       child: ConstrainedBox(
                         constraints: BoxConstraints(
                           minHeight: constraints.maxHeight,
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.fromLTRB(28, 16, 28, 28),
+                          padding: const EdgeInsets.fromLTRB(28, 8, 28, 28),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Column(
                                 children: [
-                                  Transform.translate(
-                                    offset: _logoSlide.value * 100,
-                                    child: Transform.scale(
-                                      scale: _logoScale.value,
-                                      child: Opacity(
-                                        opacity: _logoOpacity.value,
-                                        child: Container(
-                                          width: logoSize,
-                                          height: logoSize,
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(
-                                              AppRadii.lg,
-                                            ),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: AppColors.blue
-                                                    .withValues(alpha: glow),
-                                                blurRadius: 42,
-                                                spreadRadius: 2,
-                                              ),
-                                            ],
-                                          ),
-                                          child: ClipRRect(
-                                            borderRadius: BorderRadius.circular(
-                                              AppRadii.lg,
-                                            ),
-                                            child: Image.asset(
-                                              'assets/images/logo.jpg',
-                                              fit: BoxFit.contain,
-                                              errorBuilder: (
-                                                context,
-                                                error,
-                                                _,
-                                              ) => const _LogoFallback(),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
+                                  AnimatedSpartanMark(size: emblemSize),
                                   const SizedBox(height: 28),
                                   SlideTransition(
                                     position: _titleSlide,
@@ -201,12 +148,15 @@ class _SplashScreenState extends State<SplashScreen>
                               ),
                               Column(
                                 children: [
-                                  SizedBox(
-                                    width: double.infinity,
-                                    height: 56,
-                                    child: FilledButton(
-                                      onPressed: widget.onEnterArena,
-                                      child: Text(strings.splashCta),
+                                  Opacity(
+                                    opacity: _ctaOpacity.value,
+                                    child: SizedBox(
+                                      width: double.infinity,
+                                      height: 56,
+                                      child: FilledButton(
+                                        onPressed: widget.onEnterArena,
+                                        child: Text(strings.splashCta),
+                                      ),
                                     ),
                                   ),
                                   const SizedBox(height: 16),
@@ -248,9 +198,9 @@ class _AmbientBackground extends StatelessWidget {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Color(0xFF101D31),
+                  AppColors.backgroundAmbient,
                   AppColors.background,
-                  Color(0xFF080D16),
+                  AppColors.background,
                 ],
               ),
             ),
@@ -264,7 +214,7 @@ class _AmbientBackground extends StatelessWidget {
             height: 280,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: AppColors.blue.withValues(alpha: 0.10),
+              color: AppColors.goldDim.withValues(alpha: 0.12),
             ),
           ),
         ),
@@ -276,7 +226,7 @@ class _AmbientBackground extends StatelessWidget {
             height: 300,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: AppColors.blueLight.withValues(alpha: 0.045),
+              color: AppColors.bronze.withValues(alpha: 0.05),
             ),
           ),
         ),
@@ -285,19 +235,79 @@ class _AmbientBackground extends StatelessWidget {
   }
 }
 
-class _LogoFallback extends StatelessWidget {
-  const _LogoFallback();
+/// Slow rising embers drawn entirely in code; deterministic seed so widget
+/// tests are stable. Frozen at frame zero under reduced motion.
+class _EmberCanvas extends StatelessWidget {
+  const _EmberCanvas({required this.controller});
+
+  final AnimationController controller;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: AppColors.surface,
-      alignment: Alignment.center,
-      child: const Icon(
-        Icons.shield_outlined,
-        size: 110,
-        color: AppColors.blueLight,
-      ),
+    return CustomPaint(
+      painter: _EmberPainter(controller: controller),
     );
   }
+}
+
+class _EmberPainter extends CustomPainter {
+  _EmberPainter({required this.controller}) : super(repaint: controller);
+
+  final AnimationController controller;
+
+  static final List<_Ember> _embers = List<_Ember>.generate(
+    26,
+    (i) {
+      final random = math.Random(7 + i);
+      return _Ember(
+        x: random.nextDouble(),
+        y: random.nextDouble(),
+        drift: random.nextDouble() * 2 * math.pi,
+        radius: 0.8 + random.nextDouble() * 1.4,
+        alpha: 0.04 + random.nextDouble() * 0.18,
+        speed: 0.03 + random.nextDouble() * 0.09,
+      );
+    },
+  );
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final t = controller.value;
+    for (final ember in _embers) {
+      final y = (ember.y - t * ember.speed) % 1.0;
+      final x = ember.x + math.sin(t * 2 * math.pi + ember.drift) * 0.012;
+      final brightness = (math.sin(t * 4 * math.pi + ember.drift) + 1) / 2;
+      final paint = Paint()
+        ..color = AppColors.gold.withValues(
+          alpha: ember.alpha * (0.55 + 0.45 * brightness),
+        );
+      canvas.drawCircle(
+        Offset(x * size.width, y * size.height),
+        ember.radius,
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(_EmberPainter oldDelegate) => false;
+}
+
+class _Ember {
+  const _Ember({
+    required this.x,
+    required this.y,
+    required this.drift,
+    required this.radius,
+    required this.alpha,
+    required this.speed,
+  });
+
+  /// Normalized start positions (0..1 of the viewport).
+  final double x;
+  final double y;
+  final double drift;
+  final double radius;
+  final double alpha;
+  final double speed;
 }

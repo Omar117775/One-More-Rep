@@ -10,9 +10,9 @@ class ApiException implements Exception {
 
   /// Transport-level failure (timeout, DNS, connection refused).
   const ApiException.network(this.message)
-      : kind = ApiExceptionKind.network,
-        statusCode = null,
-        fieldErrors = const {};
+    : kind = ApiExceptionKind.network,
+      statusCode = null,
+      fieldErrors = const {};
 
   const ApiException.server({
     required this.message,
@@ -33,8 +33,9 @@ class ApiException implements Exception {
   bool get isValidation => statusCode == 422;
   bool get isNotFound => statusCode == 404;
 
-  String get firstFieldError =>
-      fieldErrors.isEmpty ? message : fieldErrors.values.expand((e) => e).join(' ');
+  String get firstFieldError => fieldErrors.isEmpty
+      ? message
+      : fieldErrors.values.expand((e) => e).join(' ');
 
   @override
   String toString() =>

@@ -144,7 +144,7 @@ class _CardioFormScreenState extends State<CardioFormScreen> {
             DropdownButtonFormField<String>(
               initialValue: _activity.value,
               decoration: InputDecoration(
-                prefixIcon: Icon(_activity.icon, color: AppColors.blueLight),
+                prefixIcon: Icon(_activity.icon, color: AppColors.goldLight),
               ),
               items: [
                 for (final option in CardioActivityOption.options)
@@ -152,7 +152,7 @@ class _CardioFormScreenState extends State<CardioFormScreen> {
                     value: option.value,
                     child: Row(
                       children: [
-                        Icon(option.icon, size: 20, color: AppColors.blueLight),
+                        Icon(option.icon, size: 20, color: AppColors.goldLight),
                         const SizedBox(width: AppSpacing.sm),
                         Text(option.label(strings)),
                       ],

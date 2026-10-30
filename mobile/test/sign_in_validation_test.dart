@@ -5,7 +5,10 @@ void main() {
   group('sign-in validation', () {
     test('accepts a well-formed email', () {
       expect(validateEmailField('l@example.com'), isNull);
-      expect(validateEmailField(' LEONIDAS.EXAMPLE@sub.domain.io '.trim()), isNull);
+      expect(
+        validateEmailField(' LEONIDAS.EXAMPLE@sub.domain.io '.trim()),
+        isNull,
+      );
     });
 
     test('rejects empty and malformed emails', () {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../components/common.dart';
+import '../../components/rest_timer_widget.dart';
 import '../../core/app_scope.dart';
 import '../../core/formatters.dart';
 import '../../core/parsing.dart';
@@ -74,6 +75,7 @@ class _SessionLogScreenState extends State<SessionLogScreen> {
   final Map<Object?, List<_LoggedRow>> _rowsPerExercise = {};
   late final List<ProgramExercise> _plannedExercises;
   bool _saving = false;
+  bool _showRestTimer = false;
   String? _errorText;
 
   @override
@@ -256,6 +258,16 @@ class _SessionLogScreenState extends State<SessionLogScreen> {
               ? '${strings.dayLabel} ${formatInteger(widget.day!.dayNumber, locale: locale)}'
               : widget.day!.name,
         ),
+        actions: [
+          IconButton(
+            icon: Icon(
+              _showRestTimer ? Icons.timer_off_outlined : Icons.timer_outlined,
+              color: AppColors.metallicGold,
+            ),
+            tooltip: 'Spartan Rest Timer',
+            onPressed: () => setState(() => _showRestTimer = !_showRestTimer),
+          ),
+        ],
       ),
       bottomNavigationBar: SafeArea(
         child: Padding(
@@ -285,6 +297,13 @@ class _SessionLogScreenState extends State<SessionLogScreen> {
       body: ListView(
         padding: const EdgeInsets.all(AppSpacing.lg),
         children: [
+          if (_showRestTimer) ...[
+            RestTimerWidget(
+              initialSeconds: 60,
+              onDismiss: () => setState(() => _showRestTimer = false),
+            ),
+            const SizedBox(height: AppSpacing.md),
+          ],
           if (_errorText != null)
             Container(
               margin: const EdgeInsets.only(bottom: AppSpacing.md),

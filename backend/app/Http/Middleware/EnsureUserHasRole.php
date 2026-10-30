@@ -13,13 +13,19 @@ class EnsureUserHasRole
         $user = $request->user();
 
         if (! $user) {
-            return response()->json(['message' => 'Unauthenticated.'], 401);
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json(['message' => 'Unauthenticated.'], 401);
+            }
+            return redirect()->guest('/login');
         }
 
         $user->loadMissing('roles');
 
         if (! $user->hasAnyRole($roles)) {
-            return response()->json(['message' => 'Forbidden.'], 403);
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json(['message' => 'Forbidden.'], 403);
+            }
+            abort(403, 'Unauthorized role access.');
         }
 
         return $next($request);

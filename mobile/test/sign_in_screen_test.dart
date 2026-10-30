@@ -6,6 +6,7 @@ import 'package:mobile/core/app_scope.dart';
 import 'package:mobile/design/app_theme.dart';
 import 'package:mobile/features/auth/sign_in_screen.dart';
 import 'package:mobile/localization/app_strings.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'fake_auth_repository.dart';
 import 'fakes.dart';
@@ -32,27 +33,22 @@ Widget _signInHarness(AppController controller) {
 }
 
 void main() {
+  setUp(() {
+    SharedPreferences.setMockInitialValues({});
+  });
+
   group('SignInScreen', () {
     testWidgets(
-      'initializes without inherited-widget lifecycle errors and prefills the API URL',
+      'initializes without inherited-widget lifecycle errors and renders sign-in form',
       (tester) async {
         final controller = _controller();
-        controller.setApiBaseUrl('https://staging.example.test/api/v1');
 
         await tester.pumpWidget(_signInHarness(controller));
         await tester.pump();
 
         expect(tester.takeException(), isNull);
         expect(find.text('WELCOME BACK'), findsOneWidget);
-
-        await tester.tap(find.textContaining('Advanced'));
-        await tester.pump(const Duration(milliseconds: 300));
-
-        expect(
-          find.text('https://staging.example.test/api/v1'),
-          findsOneWidget,
-        );
-        expect(tester.takeException(), isNull);
+        expect(find.text('SIGN IN'), findsOneWidget);
       },
     );
 

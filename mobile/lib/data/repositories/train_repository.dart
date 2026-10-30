@@ -43,8 +43,15 @@ class ApiTrainRepository implements TrainRepository {
     final all = <WorkoutSessionModel>[];
     var page = 1;
     while (true) {
-      final body = await _client.get('/trainee/sessions', query: {'per_page': '50', 'page': '$page'});
-      final entries = body is List ? body : body is Map && body['data'] is List ? body['data'] as List : [];
+      final body = await _client.get(
+        '/trainee/sessions',
+        query: {'per_page': '50', 'page': '$page'},
+      );
+      final entries = body is List
+          ? body
+          : body is Map && body['data'] is List
+          ? body['data'] as List
+          : [];
       all.addAll(mapList(entries, WorkoutSessionModel.fromJson));
       final lastPage = _lastPage(body);
       if (lastPage == null || page >= lastPage || page >= 10) break;
@@ -57,7 +64,11 @@ class ApiTrainRepository implements TrainRepository {
     if (body is! Map) return null;
     final meta = body['meta'] is Map ? body['meta'] as Map : null;
     final raw = meta?['last_page'];
-    return raw is num ? raw.toInt() : raw is String ? int.tryParse(raw) : null;
+    return raw is num
+        ? raw.toInt()
+        : raw is String
+        ? int.tryParse(raw)
+        : null;
   }
 
   @override
@@ -93,7 +104,10 @@ class ApiTrainRepository implements TrainRepository {
       'notes': ?notes,
       'sets': ?sets,
     };
-    final body = await _client.patch('/trainee/sessions/$sessionId', body: payload);
+    final body = await _client.patch(
+      '/trainee/sessions/$sessionId',
+      body: payload,
+    );
     return WorkoutSessionModel.fromJson(_dataOf(body));
   }
 
@@ -103,5 +117,6 @@ class ApiTrainRepository implements TrainRepository {
     return true;
   }
 
-  dynamic _dataOf(dynamic body) => body is Map && body.containsKey('data') ? body['data'] : body;
+  dynamic _dataOf(dynamic body) =>
+      body is Map && body.containsKey('data') ? body['data'] : body;
 }

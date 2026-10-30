@@ -1,4 +1,4 @@
-﻿import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../core/api_exception.dart';
 import '../../data/models/assignment.dart';
@@ -34,13 +34,17 @@ class TrainViewModel extends ChangeNotifier {
 
   List<WorkoutSessionModel> get sessionsNewestFirst {
     final list = [...sessions];
-    list.sort((a, b) => (b.startedAt ?? DateTime.fromMillisecondsSinceEpoch(0))
-        .compareTo(a.startedAt ?? DateTime.fromMillisecondsSinceEpoch(0)));
+    list.sort(
+      (a, b) => (b.startedAt ?? DateTime.fromMillisecondsSinceEpoch(0))
+          .compareTo(a.startedAt ?? DateTime.fromMillisecondsSinceEpoch(0)),
+    );
     return list;
   }
 
   Future<void> load() async {
-    final keepReady = status == TrainStatus.ready && (sessions.isNotEmpty || assignments.isNotEmpty);
+    final keepReady =
+        status == TrainStatus.ready &&
+        (sessions.isNotEmpty || assignments.isNotEmpty);
     if (!keepReady) status = TrainStatus.loading;
     notifyListeners();
     try {

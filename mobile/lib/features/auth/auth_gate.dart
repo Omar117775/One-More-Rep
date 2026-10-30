@@ -6,11 +6,12 @@ import '../shell/app_shell.dart';
 import '../splash/splash_screen.dart';
 import 'sign_in_screen.dart';
 
-/// Single root gate for the in-memory P5 session.
+/// Single root gate for the session and route switching.
 ///
-/// The gate is the stable `MaterialApp.home`, so a successful sign-in swaps
-/// the visible screen in place instead of leaving a pushed sign-in route on the
-/// navigator stack. Persistent session restore remains P7 work.
+/// On launch, displays the SplashScreen while attempting background
+/// session restoration. If a valid token is found, automatically transitions
+/// to the AppShell. If the user taps "ENTER THE ARENA" before/without restoration,
+/// transitions to the SignInScreen.
 class AuthGate extends StatefulWidget {
   const AuthGate({super.key});
 
@@ -20,6 +21,27 @@ class AuthGate extends StatefulWidget {
 
 class _AuthGateState extends State<AuthGate> {
   bool _showSignIn = false;
+  bool _restoreAttempted = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_restoreAttempted) {
+      _restoreAttempted = true;
+      _tryRestore();
+    }
+  }
+
+  Future<void> _tryRestore() async {
+    final controller = AppScope.of(context);
+    if (!controller.isSignedIn) {
+      try {
+        await controller.tryRestoreSession();
+      } catch (_) {
+        // Best-effort session restoration.
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +60,9 @@ class _AuthGateState extends State<AuthGate> {
     }
 
     return AnimatedSwitcher(
-      duration: MediaQuery.of(context).disableAnimations ? Duration.zero : AppDurations.page,
+      duration: MediaQuery.of(context).disableAnimations
+          ? Duration.zero
+          : AppDurations.page,
       switchInCurve: Curves.easeOutCubic,
       switchOutCurve: Curves.easeInCubic,
       child: screen,

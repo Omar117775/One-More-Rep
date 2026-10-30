@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
 
+import '../design/motion/count_up_number.dart';
 import '../design/tokens.dart';
 
 /// Animated summary tile used on the home dashboard. The value slides in with
-/// a single-shot motion; static when reduced motion is enabled.
+/// a single-shot motion; static when reduced motion is enabled. When
+/// [countValue] is provided the number counts up through [countFormat] and
+/// settles on [value] (the exact same final string in both cases).
 class AnimatedStatTile extends StatelessWidget {
   const AnimatedStatTile({
     required this.icon,
     required this.label,
     required this.value,
     this.caption,
-    this.accent = AppColors.blueLight,
+    this.accent = AppColors.goldLight,
+    this.countValue,
+    this.countFormat,
     super.key,
   });
 
@@ -19,6 +24,13 @@ class AnimatedStatTile extends StatelessWidget {
   final String value;
   final String? caption;
   final Color accent;
+
+  /// Numeric source for the count-up reveal; the final frame formats this
+  /// value so the visible end state matches [value] exactly.
+  final double? countValue;
+
+  /// Formats the interpolated number (e.g. localized decimal + unit).
+  final String Function(double value)? countFormat;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +50,13 @@ class AnimatedStatTile extends StatelessWidget {
       overflow: TextOverflow.ellipsis,
     );
 
-    if (animated) {
+    if (animated && countValue != null && countFormat != null) {
+      valueWidget = CountUpNumber(
+        value: countValue!,
+        format: countFormat!,
+        style: AppText.headline.copyWith(fontSize: 22),
+      );
+    } else if (animated) {
       valueWidget = TweenAnimationBuilder<double>(
         tween: Tween(begin: 0, end: 1),
         duration: const Duration(milliseconds: 650),

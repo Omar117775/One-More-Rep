@@ -3,14 +3,27 @@ import 'package:flutter/material.dart';
 import '../../components/common.dart';
 import '../../core/api_exception.dart';
 import '../../core/app_scope.dart';
+import '../../design/brand/spartan_emblem.dart';
 import '../../design/tokens.dart';
 import '../../localization/app_strings.dart';
+import 'forgot_password_screen.dart';
+import 'registration_screen.dart';
 import 'sign_in_validators.dart';
 
-/// Minimal P5 sign-in gate. Email/password validation, error surfacing and
-/// an advanced API base URL field. Full auth/profile UX arrives in P7.
+/// Minimal sign-in gate. Email/password validation, error surfacing,
+/// guest exploration, registration, and recovery.
+/// API base URL is resolved automatically from the build environment.
 class SignInScreen extends StatefulWidget {
-  const SignInScreen({super.key});
+  const SignInScreen({
+    this.onSwitchToRegister,
+    this.onSwitchToForgotPassword,
+    this.onSwitchToOnboarding,
+    super.key,
+  });
+
+  final VoidCallback? onSwitchToRegister;
+  final VoidCallback? onSwitchToForgotPassword;
+  final VoidCallback? onSwitchToOnboarding;
 
   @override
   State<SignInScreen> createState() => _SignInScreenState();
@@ -20,34 +33,14 @@ class _SignInScreenState extends State<SignInScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  late final TextEditingController _apiUrlController;
   bool _obscurePassword = true;
-  bool _showAdvanced = false;
   bool _loading = false;
-  bool _apiUrlInitialized = false;
   String? _topError;
-
-  @override
-  void initState() {
-    super.initState();
-    _apiUrlController = TextEditingController();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // Inherited widgets may not be read from initState. Prefill once here so
-    // controller notifications do not overwrite the user's in-progress edit.
-    if (_apiUrlInitialized) return;
-    _apiUrlInitialized = true;
-    _apiUrlController.text = AppScope.of(context).apiBaseUrl;
-  }
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
-    _apiUrlController.dispose();
     super.dispose();
   }
 
@@ -55,7 +48,6 @@ class _SignInScreenState extends State<SignInScreen> {
     final valid = _formKey.currentState?.validate() ?? false;
     if (!valid) return;
     final controller = AppScope.of(context);
-    controller.setApiBaseUrl(_apiUrlController.text);
     setState(() {
       _loading = true;
       _topError = null;
@@ -100,7 +92,9 @@ class _SignInScreenState extends State<SignInScreen> {
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: AppBreakpoints.contentMax),
+            constraints: const BoxConstraints(
+              maxWidth: AppBreakpoints.contentMax,
+            ),
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
               child: Form(
@@ -113,23 +107,25 @@ class _SignInScreenState extends State<SignInScreen> {
                       width: 88,
                       height: 88,
                       alignment: Alignment.center,
-                      clipBehavior: Clip.antiAlias,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(AppRadii.lg),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.blue.withValues(alpha: 0.25),
+                            color: AppColors.gold.withValues(alpha: 0.25),
                             blurRadius: 30,
                           ),
                         ],
                       ),
-                      child: Image.asset('assets/images/logo.jpg', fit: BoxFit.contain),
+                      child: const SpartanEmblem(size: 84, emphasis: 1.2),
                     ),
                     const SizedBox(height: AppSpacing.lg),
                     Text(
                       strings.signInTitle,
                       textAlign: TextAlign.center,
-                      style: AppText.display.copyWith(fontSize: 25, letterSpacing: 1.4),
+                      style: AppText.display.copyWith(
+                        fontSize: 25,
+                        letterSpacing: 1.4,
+                      ),
                     ),
                     const SizedBox(height: AppSpacing.sm),
                     Text(
@@ -157,7 +153,9 @@ class _SignInScreenState extends State<SignInScreen> {
                           ? null
                           : strings.errPasswordRequired,
                       suffixIcon: IconButton(
-                        onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                        onPressed: () => setState(
+                          () => _obscurePassword = !_obscurePassword,
+                        ),
                         icon: Icon(
                           _obscurePassword
                               ? Icons.visibility_off_outlined
@@ -172,48 +170,104 @@ class _SignInScreenState extends State<SignInScreen> {
                         decoration: BoxDecoration(
                           color: AppColors.danger.withValues(alpha: 0.10),
                           borderRadius: BorderRadius.circular(AppRadii.sm),
-                          border: Border.all(color: AppColors.danger.withValues(alpha: 0.5)),
+                          border: Border.all(
+                            color: AppColors.danger.withValues(alpha: 0.5),
+                          ),
                         ),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Icon(Icons.error_outline, color: AppColors.danger, size: 20),
+                            const Icon(
+                              Icons.error_outline,
+                              color: AppColors.danger,
+                              size: 20,
+                            ),
                             const SizedBox(width: AppSpacing.sm),
                             Expanded(
                               child: Text(
                                 _topError!,
-                                style: AppText.secondary.copyWith(color: AppColors.danger),
+                                style: AppText.secondary.copyWith(
+                                  color: AppColors.danger,
+                                ),
                               ),
                             ),
                           ],
                         ),
                       ),
-                    if (_topError != null) const SizedBox(height: AppSpacing.md),
+                    if (_topError != null)
+                      const SizedBox(height: AppSpacing.md),
                     const SizedBox(height: AppSpacing.md),
                     PrimaryButton(
                       label: strings.signInButton,
                       loading: _loading,
                       onPressed: _loading ? null : _submit,
                     ),
-                    const SizedBox(height: AppSpacing.sm),
+                    const SizedBox(height: AppSpacing.md),
+                    // Auxiliary Auth Links
+                    Wrap(
+                      alignment: WrapAlignment.center,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: AppSpacing.xs,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            if (widget.onSwitchToForgotPassword != null) {
+                              widget.onSwitchToForgotPassword!();
+                            } else {
+                              Navigator.of(context).push(
+                                MaterialPageRoute<void>(
+                                  builder: (_) => ForgotPasswordScreen(
+                                    onBackToSignIn: () => Navigator.of(context).pop(),
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                          child: Text(
+                            strings.forgotPasswordLink,
+                            style: AppText.secondary.copyWith(
+                              color: AppColors.metallicGold,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                        const Text('•', style: TextStyle(color: AppColors.neutralGray)),
+                        TextButton(
+                          onPressed: () {
+                            if (widget.onSwitchToRegister != null) {
+                              widget.onSwitchToRegister!();
+                            } else {
+                              Navigator.of(context).push(
+                                MaterialPageRoute<void>(
+                                  builder: (_) => RegistrationScreen(
+                                    onSwitchToSignIn: () => Navigator.of(context).pop(),
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                          child: Text(
+                            strings.signUpLink,
+                            style: AppText.secondary.copyWith(
+                              color: AppColors.metallicGold,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                     TextButton(
-                      onPressed: () => setState(() => _showAdvanced = !_showAdvanced),
+                      onPressed: () => AppScope.of(context).enterAsGuestMock(),
                       child: Text(
-                        '${_showAdvanced ? '▾' : '▸'} ${strings.advancedSection}',
+                        strings.guestDemoButton,
+                        style: AppText.caption.copyWith(
+                          color: AppColors.neutralGray,
+                          letterSpacing: 0.8,
+                        ),
                       ),
                     ),
-                    AnimatedSize(
-                      duration: AppDurations.fast,
-                      curve: Curves.easeOutCubic,
-                      child: _showAdvanced
-                          ? OmrTextField(
-                              label: strings.apiUrlLabel,
-                              controller: _apiUrlController,
-                              keyboardType: TextInputType.url,
-                            )
-                          : const SizedBox(width: double.infinity),
-                    ),
-                    const SizedBox(height: AppSpacing.xl),
+                    const SizedBox(height: AppSpacing.lg),
                   ],
                 ),
               ),

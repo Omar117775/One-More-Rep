@@ -34,21 +34,28 @@ Future<AppController> pumpSignedInApp(
 
 void main() {
   group('home dashboard', () {
-    testWidgets('shows empty-state hints when analytics and assignments are empty',
-        (tester) async {
-      await pumpSignedInApp(
-        tester,
-        train: FakeTrainRepository(assignmentsToReturn: [], sessionsToReturn: []),
-        analytics: FakeAnalyticsRepository(),
-      );
+    testWidgets(
+      'shows empty-state hints when analytics and assignments are empty',
+      (tester) async {
+        await pumpSignedInApp(
+          tester,
+          train: FakeTrainRepository(
+            assignmentsToReturn: [],
+            sessionsToReturn: [],
+          ),
+          analytics: FakeAnalyticsRepository(),
+        );
 
-      expect(find.text('LAST 30 DAYS'), findsOneWidget);
-      expect(find.text('No workouts in the last 30 days'), findsOneWidget);
-      expect(find.text('No cardio in the last 30 days'), findsOneWidget);
-      expect(find.text('No active program yet'), findsOneWidget);
-    });
+        expect(find.text('LAST 30 DAYS'), findsOneWidget);
+        expect(find.text('No workouts in the last 30 days'), findsOneWidget);
+        expect(find.text('No cardio in the last 30 days'), findsOneWidget);
+        expect(find.text('No active program yet'), findsOneWidget);
+      },
+    );
 
-    testWidgets('shows real summary values when analytics has data', (tester) async {
+    testWidgets('shows real summary values when analytics has data', (
+      tester,
+    ) async {
       final summary = AnalyticsSummary.fromJson({
         'from': '2026-04-21',
         'to': '2026-05-21',
@@ -69,17 +76,17 @@ void main() {
           'sessions': 2,
           'duration_seconds': 5400,
           'weekly': [
-            {'week_start': '2026-04-27', 'duration_seconds': 2700, 'sessions': 1},
+            {
+              'week_start': '2026-04-27',
+              'duration_seconds': 2700,
+              'sessions': 1,
+            },
           ],
         },
         'body': {
           'has_data': true,
           'series': [
-            {
-              'id': 1,
-              'measured_on': '2026-05-01',
-              'weight_kg': '84.2',
-            },
+            {'id': 1, 'measured_on': '2026-05-01', 'weight_kg': '84.2'},
           ],
         },
       });
@@ -101,7 +108,10 @@ void main() {
     testWidgets('quick actions switch tabs through the shell', (tester) async {
       await pumpSignedInApp(
         tester,
-        train: FakeTrainRepository(assignmentsToReturn: [], sessionsToReturn: []),
+        train: FakeTrainRepository(
+          assignmentsToReturn: [],
+          sessionsToReturn: [],
+        ),
         analytics: FakeAnalyticsRepository(),
       );
 
@@ -110,8 +120,9 @@ void main() {
       await tester.pump(const Duration(milliseconds: 300));
       expect(find.text('Training Programs'), findsOneWidget);
 
-      // Back to the Home tab via the bottom navigation bar, then "Add cardio".
-      await tester.tap(find.byIcon(Icons.home_outlined).first);
+      // Back to the Home tab via the bottom navigation bar (animated
+      // code-drawn nav icons since M2), then "Add cardio".
+      await tester.tap(find.text('Home').first);
       await tester.pump(const Duration(milliseconds: 300));
       await tester.tap(find.byIcon(Icons.directions_run).first);
       await tester.pump(const Duration(milliseconds: 300));

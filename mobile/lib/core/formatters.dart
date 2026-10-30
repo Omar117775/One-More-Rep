@@ -10,7 +10,8 @@ NumberFormat _numberFormat(String locale, {int? digits, int minDigits = 0}) {
 }
 
 /// Formats a number with up to [maxDigits] decimals, trailing zeros trimmed.
-String formatDecimal(double? value, {
+String formatDecimal(
+  double? value, {
   required String locale,
   int maxDigits = 1,
   String fallback = '—',
@@ -19,12 +20,18 @@ String formatDecimal(double? value, {
   final format = _numberFormat(locale, digits: maxDigits, minDigits: 0);
   var text = format.format(value);
   if (text.contains(RegExp('[.,]'))) {
-    text = text.replaceFirst(RegExp(r'(0+)$'), '').replaceFirst(RegExp(r'[.,]$'), '');
+    text = text
+        .replaceFirst(RegExp(r'(0+)$'), '')
+        .replaceFirst(RegExp(r'[.,]$'), '');
   }
   return text;
 }
 
-String formatInteger(num? value, {required String locale, String fallback = '0'}) {
+String formatInteger(
+  num? value, {
+  required String locale,
+  String fallback = '0',
+}) {
   if (value == null) return fallback;
   return _numberFormat(locale).format(value);
 }

@@ -14,7 +14,10 @@ class EnsureUserIsActive
         $user = $request->user();
 
         if (! $user) {
-            return response()->json(['message' => 'Unauthenticated.'], 401);
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json(['message' => 'Unauthenticated.'], 401);
+            }
+            return redirect()->guest('/login');
         }
 
         if (! $user->is_active) {
@@ -23,7 +26,10 @@ class EnsureUserIsActive
                 $token->delete();
             }
 
-            return response()->json(['message' => 'Account is disabled.'], 403);
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json(['message' => 'Account is disabled.'], 403);
+            }
+            abort(403, 'Account is disabled.');
         }
 
         return $next($request);

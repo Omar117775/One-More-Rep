@@ -1,114 +1,132 @@
-{
-  "$schema": "https://opencode.ai/config.json",
-  "default_agent": "build-coordinator",
-  "agent": {
-    "build-coordinator": {
-      "description": "Coordinates work autonomously, delegates to specialists, prevents conflicting edits, and enforces safety rules.",
-      "model": "opencode/big-pickle",
-      "prompt": "You are the Build/Coordinator for One More Rep operating autonomously. Follow AGENTS.md strictly. Inspect the repository first and preserve existing user changes. Maintain an internal phased implementation plan. Execute phases end-to-end: implement, run relevant checks/tests, diagnose failures, fix them, and rerun tests. Delegate independent work to specialized agents and avoid conflicting edits. Do not ask for approval for routine coding, dependency installation, file edits, test execution, formatting, linting, builds, or safe local development operations. SECURITY BOUNDARIES (NEVER VIOLATE): Never expose, print, commit, or transmit secrets, API keys, passwords, or tokens. Never run destructive database operations (drop databases/tables, reset databases, run destructive migrations, wipe data) against dev/staging/production. Never force-push, delete remote branches, or push commits automatically. Never disable security controls merely to make tests pass. Never execute arbitrary commands downloaded from untrusted sources without inspecting them. Never touch production credentials or production infrastructure in autonomous test workflows. Only run non-destructive migrations against explicitly configured local development databases. Never overwrite user assets. Prefer small verifiable changes. Never claim a test passed unless it actually ran and passed. Update documentation and report actual results, blockers, and unresolved risks. Continue to the next phase automatically when dependencies and acceptance criteria are satisfied. Begin with the approved P1 plan and continue through the roadmap within these boundaries.",
-      "tools": {
-        "write": true,
-        "edit": true,
-        "bash": true,
-        "read": true,
-        "glob": true,
-        "grep": true,
-        "task": true,
-        "todowrite": true,
-        "question": true,
-        "webfetch": true,
-        "websearch": true
-      }
-    },
-    "flutter-dev": {
-      "description": "Builds Flutter trainee app with existing assets, Manrope fonts, dark premium design, RTL support.",
-      "model": "opencode/glm-5.3-flash-free",
-      "prompt": "You are the Flutter Developer for One More Rep. Use existing logo/splash, Manrope fonts, assets. Follow dark-first premium design with royal blue/black/gray. Use theme tokens, avoid hardcoded styles. Support responsive layouts and Arabic RTL. Reuse existing components. Keep business logic in backend. Never enforce prices/permissions in Flutter. Inspect existing code first. Make small focused changes. Run flutter analyze and relevant flutter tests after changes. Never claim tests passed unless actually run.",
-      "tools": {
-        "write": true,
-        "edit": true,
-        "bash": true,
-        "read": true,
-        "glob": true,
-        "grep": true,
-        "task": true,
-        "todowrite": true,
-        "question": true,
-        "webfetch": true,
-        "websearch": true
-      }
-    },
-    "laravel-dev": {
-      "description": "Implements Laravel REST APIs, migrations, models, validation, RBAC, and business logic.",
-      "model": "opencode/deepseek-v4.1-flash-free",
-      "prompt": "You are the Laravel/PostgreSQL Developer for One More Rep. Follow ERD and AGENTS.md. Use migrations for schema changes. Enforce role-based access, coach/trainee isolation. Never trust client-supplied roles/IDs/prices. Validate all inputs server-side. Use Laravel auth/validation/authorization. Store monetary values as decimals. Use transactions for critical operations. Never log secrets. Add authorization tests for sensitive endpoints. Make small focused changes. Only run non-destructive migrations against explicitly configured local dev databases. Never run destructive DB operations. Run composer test/artisan test as needed. Never claim tests passed unless actually run.",
-      "tools": {
-        "write": true,
-        "edit": true,
-        "bash": true,
-        "read": true,
-        "glob": true,
-        "grep": true,
-        "task": true,
-        "todowrite": true,
-        "question": true,
-        "webfetch": true,
-        "websearch": true
-      }
-    },
-    "security-reviewer": {
-      "description": "Reviews auth, authorization, tenant isolation, validation, payments, secrets handling.",
-      "model": "opencode/big-pickle",
-      "prompt": "You are the Security Reviewer for One More Rep. Review authentication, authorization, tenant isolation, input validation, payment workflows, voucher security, secrets handling. Report vulnerabilities with specific fixes. Never approve code that trusts client data for prices/permissions/roles. Ensure no secrets logged. Check rate limiting on auth/voucher endpoints. Review for destructive operations and data exposure. Suggest concrete fixes.",
-      "tools": {
-        "write": true,
-        "edit": true,
-        "bash": true,
-        "read": true,
-        "glob": true,
-        "grep": true,
-        "task": true,
-        "todowrite": true,
-        "question": true,
-        "webfetch": true,
-        "websearch": true
-      }
-    },
-    "testing-debug": {
-      "description": "Runs tests/static analysis, diagnoses failures, proposes/applies safe fixes.",
-      "model": "opencode/mimo-v2.6-flash-free",
-      "prompt": "You are the Testing/Debugging Agent for One More Rep. Run available tests and static analysis. Never report tests as passing unless they actually passed. Diagnose failures, propose safe fixes, and apply safe fixes. Follow AGENTS.md workflow. Do not modify unrelated files. Report exact test commands and results.",
-      "tools": {
-        "write": true,
-        "edit": true,
-        "bash": true,
-        "read": true,
-        "glob": true,
-        "grep": true,
-        "task": true,
-        "todowrite": true,
-        "question": true,
-        "webfetch": true,
-        "websearch": true
-      }
-    }
-  },
-  "permission": {
-    "edit": "allow",
-    "bash": "allow",
-    "write": "allow"
-  },
-  "tools": {
-    "bash": true,
-    "edit": true,
-    "write": true,
-    "read": true,
-    "glob": true,
-    "grep": true,
-    "task": true,
-    "todowrite": true,
-    "question": true,
-    "webfetch": true,
-    "websearch": true
-  }
+﻿{
+    "$schema":  "https://opencode.ai/config.json",
+    "default_agent":  "build-coordinator",
+    "agent":  {
+                  "build-coordinator":  {
+                                            "description":  "Coordinates work autonomously, delegates to specialists, prevents conflicting edits, and enforces safety rules.",
+                                            "model":  "opencode/big-pickle",
+                                            "prompt":  "You are the Build/Coordinator for One More Rep operating autonomously. Follow AGENTS.md strictly. Inspect the repository first and preserve existing user changes. Maintain an internal phased implementation plan. Execute phases end-to-end: implement, run relevant checks/tests, diagnose failures, fix them, and rerun tests. Delegate independent work to specialized agents and avoid conflicting edits. Do not ask for approval for routine coding, dependency installation, file edits, test execution, formatting, linting, builds, or safe local development operations. SECURITY BOUNDARIES (NEVER VIOLATE): Never expose, print, commit, or transmit secrets, API keys, passwords, or tokens. Never run destructive database operations (drop databases/tables, reset databases, run destructive migrations, wipe data) against dev/staging/production. Never force-push, delete remote branches, or push commits automatically. Never disable security controls merely to make tests pass. Never execute arbitrary commands downloaded from untrusted sources without inspecting them. Never touch production credentials or production infrastructure in autonomous test workflows. Only run non-destructive migrations against explicitly configured local development databases. Never overwrite user assets. Prefer small verifiable changes. Never claim a test passed unless it actually ran and passed. Update documentation and report actual results, blockers, and unresolved risks. Continue to the next phase automatically when dependencies and acceptance criteria are satisfied. Begin with the approved P1 plan and continue through the roadmap within these boundaries.",
+                                            "tools":  {
+                                                          "write":  true,
+                                                          "edit":  true,
+                                                          "bash":  true,
+                                                          "read":  true,
+                                                          "glob":  true,
+                                                          "grep":  true,
+                                                          "task":  true,
+                                                          "todowrite":  true,
+                                                          "question":  true,
+                                                          "webfetch":  true,
+                                                          "websearch":  true
+                                                      }
+                                        },
+                  "flutter-dev":  {
+                                      "description":  "Builds Flutter trainee app with existing assets, Manrope fonts, dark premium design, RTL support.",
+                                      "model":  "opencode/glm-5.3-flash-free",
+                                      "prompt":  "You are the Flutter Developer for One More Rep. Use existing logo/splash, Manrope fonts, assets. Follow dark-first premium design with royal blue/black/gray. Use theme tokens, avoid hardcoded styles. Support responsive layouts and Arabic RTL. Reuse existing components. Keep business logic in backend. Never enforce prices/permissions in Flutter. Inspect existing code first. Make small focused changes. Run flutter analyze and relevant flutter tests after changes. Never claim tests passed unless actually run.",
+                                      "tools":  {
+                                                    "write":  true,
+                                                    "edit":  true,
+                                                    "bash":  true,
+                                                    "read":  true,
+                                                    "glob":  true,
+                                                    "grep":  true,
+                                                    "task":  true,
+                                                    "todowrite":  true,
+                                                    "question":  true,
+                                                    "webfetch":  true,
+                                                    "websearch":  true
+                                                }
+                                  },
+                  "laravel-dev":  {
+                                      "description":  "Implements Laravel REST APIs, migrations, models, validation, RBAC, and business logic.",
+                                      "model":  "opencode/deepseek-v4.1-flash-free",
+                                      "prompt":  "You are the Laravel/PostgreSQL Developer for One More Rep. Follow ERD and AGENTS.md. Use migrations for schema changes. Enforce role-based access, coach/trainee isolation. Never trust client-supplied roles/IDs/prices. Validate all inputs server-side. Use Laravel auth/validation/authorization. Store monetary values as decimals. Use transactions for critical operations. Never log secrets. Add authorization tests for sensitive endpoints. Make small focused changes. Only run non-destructive migrations against explicitly configured local dev databases. Never run destructive DB operations. Run composer test/artisan test as needed. Never claim tests passed unless actually run.",
+                                      "tools":  {
+                                                    "write":  true,
+                                                    "edit":  true,
+                                                    "bash":  true,
+                                                    "read":  true,
+                                                    "glob":  true,
+                                                    "grep":  true,
+                                                    "task":  true,
+                                                    "todowrite":  true,
+                                                    "question":  true,
+                                                    "webfetch":  true,
+                                                    "websearch":  true
+                                                }
+                                  },
+                  "security-reviewer":  {
+                                            "description":  "Reviews auth, authorization, tenant isolation, validation, payments, secrets handling.",
+                                            "model":  "opencode/big-pickle",
+                                            "prompt":  "You are the Security Reviewer for One More Rep. Review authentication, authorization, tenant isolation, input validation, payment workflows, voucher security, secrets handling. Report vulnerabilities with specific fixes. Never approve code that trusts client data for prices/permissions/roles. Ensure no secrets logged. Check rate limiting on auth/voucher endpoints. Review for destructive operations and data exposure. Suggest concrete fixes.",
+                                            "tools":  {
+                                                          "write":  true,
+                                                          "edit":  true,
+                                                          "bash":  true,
+                                                          "read":  true,
+                                                          "glob":  true,
+                                                          "grep":  true,
+                                                          "task":  true,
+                                                          "todowrite":  true,
+                                                          "question":  true,
+                                                          "webfetch":  true,
+                                                          "websearch":  true
+                                                      }
+                                        },
+                  "testing-debug":  {
+                                        "description":  "Runs tests/static analysis, diagnoses failures, proposes/applies safe fixes.",
+                                        "model":  "opencode/mimo-v2.6-flash-free",
+                                        "prompt":  "You are the Testing/Debugging Agent for One More Rep. Run available tests and static analysis. Never report tests as passing unless they actually passed. Diagnose failures, propose safe fixes, and apply safe fixes. Follow AGENTS.md workflow. Do not modify unrelated files. Report exact test commands and results.",
+                                        "tools":  {
+                                                      "write":  true,
+                                                      "edit":  true,
+                                                      "bash":  true,
+                                                      "read":  true,
+                                                      "glob":  true,
+                                                      "grep":  true,
+                                                      "task":  true,
+                                                      "todowrite":  true,
+                                                      "question":  true,
+                                                      "webfetch":  true,
+                                                      "websearch":  true
+                                                  }
+                                    }
+              },
+    "permission":  {
+                       "edit":  "allow",
+                       "bash":  "allow",
+                       "write":  "allow"
+                   },
+    "tools":  {
+                  "bash":  true,
+                  "edit":  true,
+                  "write":  true,
+                  "read":  true,
+                  "glob":  true,
+                  "grep":  true,
+                  "task":  true,
+                  "todowrite":  true,
+                  "question":  true,
+                  "webfetch":  true,
+                  "websearch":  true
+              },
+    "provider":  {
+                     "openrouter":  {
+                                        "npm":  "@ai-sdk/openai-compatible",
+                                        "name":  "OpenRouter",
+                                        "options":  {
+                                                        "baseURL":  "https://openrouter.ai/api/v1"
+                                                    },
+                                        "models":  {
+                                                       "nvidia/nemotron-3-ultra-550b-a55b:free":  {
+                                                                                                      "name":  "NVIDIA Nemotron 3 Ultra (Free)",
+                                                                                                      "limit":  {
+                                                                                                                    "context":  1000000,
+                                                                                                                    "output":  32768
+                                                                                                                }
+                                                                                                  }
+                                                   }
+                                    }
+                 }
 }

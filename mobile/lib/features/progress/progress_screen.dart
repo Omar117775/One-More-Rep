@@ -15,6 +15,12 @@ import 'progress_view_model.dart';
 class ProgressScreen extends StatefulWidget {
   const ProgressScreen({super.key});
 
+  /// Standalone entry (Profile → body-at-a-glance); the shell tab uses the
+  /// same widget through the indexed stack.
+  static Future<void> pushStandalone(BuildContext context) => Navigator.of(
+    context,
+  ).push(MaterialPageRoute<void>(builder: (_) => const ProgressScreen()));
+
   @override
   State<ProgressScreen> createState() => _ProgressScreenState();
 }
@@ -102,7 +108,7 @@ class _RangeSelector extends StatelessWidget {
               child: ChoiceChip(
                 label: Text(entry.value),
                 selected: viewModel.rangeDays == entry.key,
-                selectedColor: AppColors.blue.withValues(alpha: 0.35),
+                selectedColor: AppColors.gold.withValues(alpha: 0.35),
                 showCheckmark: false,
                 onSelected: (_) => viewModel.setRange(entry.key),
               ),
@@ -243,10 +249,10 @@ class _TrendRow extends StatelessWidget {
           height: 34,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: AppColors.blue.withValues(alpha: 0.16),
+            color: AppColors.gold.withValues(alpha: 0.16),
             borderRadius: BorderRadius.circular(AppRadii.sm),
           ),
-          child: Icon(icon, size: 18, color: AppColors.blueLight),
+          child: Icon(icon, size: 18, color: AppColors.goldLight),
         ),
         const SizedBox(width: AppSpacing.sm),
         Expanded(
@@ -318,18 +324,18 @@ class _ChartsSection extends StatelessWidget {
         OmrCard(
           child: AnimatedLineChart(
             data: weightData,
-            accent: AppColors.blueLight,
+            accent: AppColors.goldLight,
           ),
         ),
         const SizedBox(height: AppSpacing.md),
         SectionHeader(title: strings.chartWorkoutVolume),
         OmrCard(
-          child: AnimatedBarChart(data: volumeData, accent: AppColors.blue),
+          child: AnimatedBarChart(data: volumeData, accent: AppColors.gold),
         ),
         const SizedBox(height: AppSpacing.md),
         SectionHeader(title: strings.chartCardioDuration),
         OmrCard(
-          child: AnimatedBarChart(data: cardioData, accent: AppColors.success),
+          child: AnimatedBarChart(data: cardioData, accent: AppColors.bronze),
         ),
       ],
     );
@@ -423,15 +429,15 @@ class _EntryCard extends StatelessWidget {
             alignment: Alignment.center,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(AppRadii.sm),
-              color: AppColors.warning.withValues(alpha: 0.14),
+              color: AppColors.bronze.withValues(alpha: 0.14),
               border: Border.all(
-                color: AppColors.warning.withValues(alpha: 0.4),
+                color: AppColors.bronze.withValues(alpha: 0.4),
               ),
             ),
             child: Text(
               '${entry.measuredOn.day}',
               style: AppText.title.copyWith(
-                color: AppColors.warning,
+                color: AppColors.bronze,
                 fontSize: 16,
               ),
             ),

@@ -17,12 +17,41 @@ class FakeAuthRepository implements AuthRepository {
     String deviceName = 'One More Rep Trainee App',
   }) async {
     if (failLogin) {
-      throw const ApiException(message: 'Invalid credentials.', kind: ApiExceptionKind.server, statusCode: 401);
+      throw const ApiException(
+        message: 'Invalid credentials.',
+        kind: ApiExceptionKind.server,
+        statusCode: 401,
+      );
     }
     return LoginResult(
       token: 'test-token',
       tokenType: 'Bearer',
-      user: User(id: 7, name: 'Leonidas', email: email, roles: const ['trainee']),
+      user: User(
+        id: 7,
+        name: 'Leonidas',
+        email: email,
+        roles: const ['trainee'],
+      ),
+    );
+  }
+
+  @override
+  Future<LoginResult> register({
+    required String name,
+    required String email,
+    required String password,
+    required String passwordConfirmation,
+    String deviceName = 'One More Rep Trainee App',
+  }) async {
+    return LoginResult(
+      token: 'test-register-token',
+      tokenType: 'Bearer',
+      user: User(
+        id: 8,
+        name: name,
+        email: email,
+        roles: const ['trainee'],
+      ),
     );
   }
 

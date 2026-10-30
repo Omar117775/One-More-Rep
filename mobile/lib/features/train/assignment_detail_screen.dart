@@ -35,9 +35,7 @@ class AssignmentDetailScreen extends StatelessWidget {
           for (final day in assignment.program.days)
             _DayCard(assignment: assignment, day: day),
           if (assignment.program.days.isEmpty)
-            const OmrCard(
-              child: SizedBox.shrink(),
-            ),
+            const OmrCard(child: SizedBox.shrink()),
         ],
       ),
     );
@@ -74,14 +72,20 @@ class _DayCard extends StatelessWidget {
                 height: 44,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: AppColors.blue.withValues(alpha: 0.18),
+                  color: AppColors.gold.withValues(alpha: 0.18),
                   borderRadius: BorderRadius.circular(AppRadii.sm),
-                  border: Border.all(color: AppColors.blue.withValues(alpha: 0.4)),
+                  border: Border.all(
+                    color: AppColors.gold.withValues(alpha: 0.4),
+                  ),
                 ),
                 child: Text(
                   '${strings.dayLabel} ${formatInteger(day.dayNumber, locale: locale)}',
                   textAlign: TextAlign.center,
-                  style: AppText.microLabel.copyWith(color: AppColors.blueLight, fontSize: 8.5, letterSpacing: 0),
+                  style: AppText.microLabel.copyWith(
+                    color: AppColors.goldLight,
+                    fontSize: 8.5,
+                    letterSpacing: 0,
+                  ),
                 ),
               ),
               const SizedBox(width: AppSpacing.md),
@@ -114,7 +118,11 @@ class _DayCard extends StatelessWidget {
               onPressed: day.exercises.isEmpty
                   ? null
                   : () {
-                      SessionLogScreen.push(context, assignment: assignment, day: day);
+                      SessionLogScreen.push(
+                        context,
+                        assignment: assignment,
+                        day: day,
+                      );
                     },
               icon: const Icon(Icons.play_arrow_rounded, size: 20),
               label: Text(strings.startSession),
@@ -127,7 +135,11 @@ class _DayCard extends StatelessWidget {
 }
 
 class _ExerciseRow extends StatelessWidget {
-  const _ExerciseRow({required this.exercise, required this.locale, required this.strings});
+  const _ExerciseRow({
+    required this.exercise,
+    required this.locale,
+    required this.strings,
+  });
 
   final ProgramExercise exercise;
   final String locale;
@@ -167,7 +179,7 @@ class _ExerciseRow extends StatelessWidget {
             child: Icon(
               Icons.fitness_center,
               size: 18,
-              color: AppColors.blueLight,
+              color: AppColors.goldLight,
             ),
           ),
           const SizedBox(width: AppSpacing.sm),

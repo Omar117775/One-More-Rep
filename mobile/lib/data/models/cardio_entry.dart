@@ -48,7 +48,8 @@ Map<String, dynamic> buildCardioPayload({
     'activity_type': activityType,
     'duration_seconds': durationSeconds,
     if (distanceKm != null && distanceKm > 0) 'distance_km': distanceKm,
-    if (averageHeartRate != null && averageHeartRate > 0) 'average_heart_rate': averageHeartRate,
+    if (averageHeartRate != null && averageHeartRate > 0)
+      'average_heart_rate': averageHeartRate,
     'performed_at': performedAt.toIso8601String(),
   };
 }

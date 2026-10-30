@@ -12,6 +12,14 @@
 .swiftpm/
 migrate_working_dir/
 
+# Secrets and environment configuration (never commit real values;
+# use --dart-define flags or a locally gitignored config file instead)
+.env
+.env.*
+!.env.example
+*.key
+config/local.json
+
 # IntelliJ related
 *.iml
 *.ipr

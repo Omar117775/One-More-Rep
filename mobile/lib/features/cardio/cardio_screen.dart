@@ -36,7 +36,7 @@ class _CardioScreenState extends State<CardioScreen> {
       appBar: AppBar(title: Text(strings.cardioTitle)),
       floatingActionButton: FloatingActionButton.extended(
         heroTag: 'cardio-add',
-        backgroundColor: AppColors.blue,
+        backgroundColor: AppColors.gold,
         foregroundColor: Colors.white,
         icon: const Icon(Icons.add),
         label: Text(strings.addCardio),
@@ -69,9 +69,14 @@ class _CardioScreenState extends State<CardioScreen> {
                 child: ListView.separated(
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.lg, AppSpacing.md, AppSpacing.lg, AppSpacing.xl + 64),
+                    AppSpacing.lg,
+                    AppSpacing.md,
+                    AppSpacing.lg,
+                    AppSpacing.xl + 64,
+                  ),
                   itemCount: list.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.md),
+                  separatorBuilder: (_, _) =>
+                      const SizedBox(height: AppSpacing.md),
                   itemBuilder: (context, index) =>
                       _EntryCard(entry: list[index], viewModel: viewModel),
                 ),
@@ -97,7 +102,10 @@ class _EntryCard extends StatelessWidget {
 
     return OmrCard(
       onTap: () {
-        CardioFormScreen.push(context, entry: entry).then((_) => viewModel.load());
+        CardioFormScreen.push(
+          context,
+          entry: entry,
+        ).then((_) => viewModel.load());
       },
       child: Row(
         children: [
@@ -106,17 +114,20 @@ class _EntryCard extends StatelessWidget {
             height: 46,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(AppRadii.sm),
-              color: AppColors.blue.withValues(alpha: 0.14),
-              border: Border.all(color: AppColors.blue.withValues(alpha: 0.4)),
+              color: AppColors.gold.withValues(alpha: 0.14),
+              border: Border.all(color: AppColors.gold.withValues(alpha: 0.4)),
             ),
-            child: Icon(entryIcon, color: AppColors.blueLight, size: 24),
+            child: Icon(entryIcon, color: AppColors.goldLight, size: 24),
           ),
           const SizedBox(width: AppSpacing.md),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(cardioActivityLabel(strings, entry.activityType), style: AppText.title),
+                Text(
+                  cardioActivityLabel(strings, entry.activityType),
+                  style: AppText.title,
+                ),
                 const SizedBox(height: 3),
                 Text(
                   formatDateTime(entry.performedAt, locale: locale),
@@ -142,7 +153,8 @@ class _EntryCard extends StatelessWidget {
     );
   }
 
-  IconData get entryIcon => CardioActivityOption.resolve(entry.activityType).icon;
+  IconData get entryIcon =>
+      CardioActivityOption.resolve(entry.activityType).icon;
 
   String cardioActivityLabel(AppStrings strings, String type) =>
       CardioActivityOption.resolve(type).label(strings);
@@ -173,9 +185,8 @@ class _EntryCard extends StatelessWidget {
     if (confirmed == true) {
       final ok = await viewModel.delete(entry.id);
       if (ok && context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(strings.savedNote)),
-        );
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(strings.savedNote)));
       }
     }
   }

@@ -2,8 +2,19 @@ import 'package:flutter/material.dart';
 
 import '../design/tokens.dart';
 
-/// Spartan states communicated by the companion.
-enum SpartanState { idle, training, success, milestone }
+/// Spartan states communicated by the dynamic warrior companion.
+/// Covers resting, active workout, workout completion, personal records,
+/// achievements, weekly goals, and AI trainer active interaction.
+enum SpartanState {
+  idle,
+  training,
+  success,
+  milestone,
+  pr,
+  achievement,
+  weeklyGoal,
+  aiActive,
+}
 
 /// Reusable animated Spartan companion built from brand shapes (shield +
 /// helmet silhouette drawn with CustomPaint, royal-blue accents) since no
@@ -30,7 +41,10 @@ class _SpartanCompanionState extends State<SpartanCompanion>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 1200));
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    );
   }
 
   @override
@@ -50,13 +64,18 @@ class _SpartanCompanionState extends State<SpartanCompanion>
         final t = _controller.value;
         final pulse = _loopValue(t, widget.state);
         final scale = switch (widget.state) {
-          SpartanState.success => _easeOutBack(t) * 1.04,
+          SpartanState.success || SpartanState.weeklyGoal => _easeOutBack(t) * 1.04,
+          SpartanState.pr || SpartanState.achievement => _easeOutBack(t) * 1.06,
           _ => 0.94 + 0.06 * _introEase(t) + pulse * 0.03,
         };
         final aura = switch (widget.state) {
-          SpartanState.training => pulse,
-          SpartanState.success => t < 0.4 ? t / 0.4 : (1 - (t - 0.4) / 0.6).clamp(0, 1).toDouble(),
-          SpartanState.milestone => (1 - t).clamp(0, 1).toDouble(),
+          SpartanState.training || SpartanState.aiActive => pulse,
+          SpartanState.success || SpartanState.weeklyGoal =>
+            t < 0.4 ? t / 0.4 : (1 - (t - 0.4) / 0.6).clamp(0, 1).toDouble(),
+          SpartanState.milestone ||
+          SpartanState.pr ||
+          SpartanState.achievement =>
+            (1 - t).clamp(0, 1).toDouble(),
           _ => 0.35 + 0.15 * (1 - _introEase(t)),
         };
         return SizedBox(
@@ -85,6 +104,7 @@ class _SpartanCompanionState extends State<SpartanCompanion>
     }
     switch (state) {
       case SpartanState.training:
+      case SpartanState.aiActive:
         if (_controller.duration != const Duration(milliseconds: 900)) {
           _controller
             ..stop()
@@ -105,10 +125,13 @@ class _SpartanCompanionState extends State<SpartanCompanion>
     }
   }
 
-  double _introEase(double t) => Curves.easeOutCubic.transform((t * 2).clamp(0, 1).toDouble());
+  double _introEase(double t) =>
+      Curves.easeOutCubic.transform((t * 2).clamp(0, 1).toDouble());
 
   double _loopValue(double t, SpartanState state) {
-    if (state != SpartanState.training) return 0;
+    if (state != SpartanState.training && state != SpartanState.aiActive) {
+      return 0;
+    }
     final phase = (t % 1.0) * 2; // triangle wave 0→1→0
     final value = phase <= 1 ? phase : 2 - phase;
     return Curves.easeInOutSine.transform(value);
@@ -151,15 +174,21 @@ class _SpartanPainter extends CustomPainter {
     _paintHelmet(canvas, radius);
     canvas.restore();
 
-    if (state == SpartanState.milestone && animate) {
+    if ((state == SpartanState.milestone ||
+            state == SpartanState.pr ||
+            state == SpartanState.achievement ||
+            state == SpartanState.weeklyGoal) &&
+        animate) {
       _paintBurst(canvas, center, radius);
     }
   }
 
   void _paintAura(Canvas canvas, Offset center, double radius) {
     final glow = Color.lerp(
-      AppColors.blue.withValues(alpha: state == SpartanState.milestone ? 0.10 : 0.16),
-      AppColors.blueLight.withValues(alpha: 0.5),
+      AppColors.gold.withValues(
+        alpha: state == SpartanState.milestone ? 0.10 : 0.16,
+      ),
+      AppColors.goldLight.withValues(alpha: 0.5),
       aura,
     )!;
     canvas.drawCircle(
@@ -216,7 +245,7 @@ class _SpartanPainter extends CustomPainter {
     final borderPaint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.4
-      ..color = AppColors.blue;
+      ..color = AppColors.gold;
 
     final r = radius * 0.86;
     final path = Path()
@@ -235,7 +264,7 @@ class _SpartanPainter extends CustomPainter {
       ..style = PaintingStyle.fill
       ..color = AppColors.white.withValues(alpha: 0.92);
     final slitPaint = Paint()..color = AppColors.background;
-    final crestPaint = Paint()..color = AppColors.blueLight;
+    final crestPaint = Paint()..color = AppColors.goldLight;
 
     final r = radius * 0.62;
     // Crest fin.

@@ -1,4 +1,5 @@
 import '../../core/parsing.dart';
+
 /// Aggregate analytics for a date range (P4 backend), with explicit
 /// `has_data` flags — missing data is never faked as zeros in the UI.
 class AnalyticsSummary {

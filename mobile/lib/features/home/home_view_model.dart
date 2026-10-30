@@ -25,7 +25,8 @@ class HomeData {
     final active = assignments.where((a) => a.isActive).toList()
       ..sort(_byEndsOn);
     if (active.isNotEmpty) return active.first;
-    final upcoming = assignments.where((a) => a.isUpcoming).toList()..sort(_byEndsOn);
+    final upcoming = assignments.where((a) => a.isUpcoming).toList()
+      ..sort(_byEndsOn);
     return upcoming.isEmpty ? null : upcoming.first;
   }
 

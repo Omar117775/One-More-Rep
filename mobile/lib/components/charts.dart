@@ -15,8 +15,7 @@ class ChartData {
   final List<double?> values;
 
   bool get isEmpty {
-    final meaningful =
-        values.whereType<double>().where((v) => v > 0).toList();
+    final meaningful = values.whereType<double>().where((v) => v > 0).toList();
     return meaningful.isEmpty;
   }
 }
@@ -27,7 +26,7 @@ class AnimatedLineChart extends StatelessWidget {
   const AnimatedLineChart({
     required this.data,
     this.height = 180,
-    this.accent = AppColors.blueLight,
+    this.accent = AppColors.goldLight,
     super.key,
   });
 
@@ -62,7 +61,7 @@ class AnimatedBarChart extends StatelessWidget {
   const AnimatedBarChart({
     required this.data,
     this.height = 180,
-    this.accent = AppColors.blueLight,
+    this.accent = AppColors.goldLight,
     super.key,
   });
 
@@ -82,7 +81,11 @@ class AnimatedBarChart extends StatelessWidget {
       curve: Curves.easeOutCubic,
       builder: (context, t, _) => CustomPaint(
         size: Size.fromHeight(height),
-        painter: _BarPainter(data: data, accent: accent, progress: animate ? t : 1),
+        painter: _BarPainter(
+          data: data,
+          accent: accent,
+          progress: animate ? t : 1,
+        ),
       ),
     );
   }
@@ -101,8 +104,11 @@ class _ChartEmpty extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.query_stats_outlined,
-                color: AppColors.muted, size: 20),
+            const Icon(
+              Icons.query_stats_outlined,
+              color: AppColors.muted,
+              size: 20,
+            ),
             const SizedBox(width: AppSpacing.sm),
             Text(
               AppStrings.of(context).noDataForPeriod,
@@ -116,7 +122,11 @@ class _ChartEmpty extends StatelessWidget {
 }
 
 abstract class _BaseChartPainter extends CustomPainter {
-  _BaseChartPainter({required this.data, required this.accent, required this.progress});
+  _BaseChartPainter({
+    required this.data,
+    required this.accent,
+    required this.progress,
+  });
 
   final ChartData data;
   final Color accent;
@@ -126,10 +136,7 @@ abstract class _BaseChartPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final numeric = data.values
-        .map((v) => v ?? 0)
-        .whereType<double>()
-        .toList();
+    final numeric = data.values.map((v) => v ?? 0).whereType<double>().toList();
     final maxValue = (numeric.reduce((a, b) => a > b ? a : b)) > 0
         ? numeric.reduce((a, b) => a > b ? a : b)
         : 1;
@@ -148,7 +155,11 @@ abstract class _BaseChartPainter extends CustomPainter {
       ..strokeWidth = 1;
     for (var i = 0; i <= 3; i++) {
       final y = chartRect.top + (chartRect.height * i / 3);
-      canvas.drawLine(Offset(chartRect.left, y), Offset(chartRect.right, y), grid);
+      canvas.drawLine(
+        Offset(chartRect.left, y),
+        Offset(chartRect.right, y),
+        grid,
+      );
     }
     // Max value label.
     _drawText(
@@ -178,7 +189,11 @@ abstract class _BaseChartPainter extends CustomPainter {
 }
 
 class _LinePainter extends _BaseChartPainter {
-  _LinePainter({required super.data, required super.accent, required super.progress});
+  _LinePainter({
+    required super.data,
+    required super.accent,
+    required super.progress,
+  });
 
   @override
   void _paintSeries(Canvas canvas, Rect rect, double bottom, double top) {
@@ -186,7 +201,9 @@ class _LinePainter extends _BaseChartPainter {
     final xs = <Offset?>[];
     for (var i = 0; i < n; i++) {
       final v = data.values[i];
-      final x = rect.left + (rect.width * (i == 0 ? 0 : i / (n - 1).clamp(1, 1 << 30)));
+      final x =
+          rect.left +
+          (rect.width * (i == 0 ? 0 : i / (n - 1).clamp(1, 1 << 30)));
       xs.add(v == null ? null : Offset(x, yFor(v, rect, bottom, top)));
     }
 
@@ -219,7 +236,10 @@ class _LinePainter extends _BaseChartPainter {
             ..shader = LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [accent.withValues(alpha: 0.28), accent.withValues(alpha: 0)],
+              colors: [
+                accent.withValues(alpha: 0.28),
+                accent.withValues(alpha: 0),
+              ],
             ).createShader(rect),
         );
       }
@@ -252,8 +272,12 @@ class _LinePainter extends _BaseChartPainter {
 
     // X labels (first + last kept legible).
     if (data.labels.isNotEmpty) {
-      _drawText(canvas, data.labels.first, Offset(rect.left, rect.bottom + 8),
-          AppText.microLabel);
+      _drawText(
+        canvas,
+        data.labels.first,
+        Offset(rect.left, rect.bottom + 8),
+        AppText.microLabel,
+      );
       _drawText(
         canvas,
         data.labels.last,
@@ -282,7 +306,11 @@ class _LinePainter extends _BaseChartPainter {
 }
 
 class _BarPainter extends _BaseChartPainter {
-  _BarPainter({required super.data, required super.accent, required super.progress});
+  _BarPainter({
+    required super.data,
+    required super.accent,
+    required super.progress,
+  });
 
   @override
   void _paintSeries(Canvas canvas, Rect rect, double bottom, double top) {
@@ -315,8 +343,12 @@ class _BarPainter extends _BaseChartPainter {
       }
     }
     if (data.labels.isNotEmpty) {
-      _drawText(canvas, data.labels.first, Offset(rect.left, rect.bottom + 8),
-          AppText.microLabel);
+      _drawText(
+        canvas,
+        data.labels.first,
+        Offset(rect.left, rect.bottom + 8),
+        AppText.microLabel,
+      );
       _drawText(
         canvas,
         data.labels.last,

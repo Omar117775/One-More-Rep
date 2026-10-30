@@ -40,7 +40,10 @@ class ProgressViewModel extends ChangeNotifier {
     try {
       final now = DateTime.now().toUtc();
       final results = await Future.wait<dynamic>([
-        analyticsRepo.fetch(from: now.subtract(Duration(days: rangeDays)), to: now),
+        analyticsRepo.fetch(
+          from: now.subtract(Duration(days: rangeDays)),
+          to: now,
+        ),
         progressRepo.list(),
       ]);
       analytics = results[0] as AnalyticsSummary;
@@ -119,11 +122,7 @@ class ProgressViewModel extends ChangeNotifier {
           chestCm: chestCm,
           armCm: armCm,
         );
-        entries = entries
-            .map((e) => e.id == id
-                ? updated
-                : e)
-            .toList();
+        entries = entries.map((e) => e.id == id ? updated : e).toList();
       } else {
         entries = [
           ...entries,

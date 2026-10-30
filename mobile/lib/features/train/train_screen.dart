@@ -71,13 +71,16 @@ class _TrainScreenState extends State<TrainScreen> {
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.all(AppSpacing.lg),
                   itemCount: list.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.md),
+                  separatorBuilder: (_, _) =>
+                      const SizedBox(height: AppSpacing.md),
                   itemBuilder: (context, index) {
                     return _AssignmentCard(
                       assignment: list[index],
                       onTap: () {
-                        AssignmentDetailScreen.push(context, list[index])
-                            .then((_) => viewModel.load());
+                        AssignmentDetailScreen.push(
+                          context,
+                          list[index],
+                        ).then((_) => viewModel.load());
                       },
                     );
                   },
@@ -102,11 +105,13 @@ class _AssignmentCard extends StatelessWidget {
     final controller = AppScope.of(context);
     final locale = controller.strings.localeName;
 
+    // Status semantics: gold = live/active emphasis, bronze = upcoming,
+    // muted = archived. Tokens only — no raw colors.
     final (label, color) = assignment.isActive
-        ? (strings.trainActive, AppColors.success)
+        ? (strings.trainActive, AppColors.goldLight)
         : assignment.isUpcoming
-            ? (strings.trainUpcoming, AppColors.blueLight)
-            : (strings.trainEnded, AppColors.muted);
+        ? (strings.trainUpcoming, AppColors.bronze)
+        : (strings.trainEnded, AppColors.muted);
 
     return OmrCard(
       onTap: onTap,
@@ -124,13 +129,19 @@ class _AssignmentCard extends StatelessWidget {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 3),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.sm,
+                  vertical: 3,
+                ),
                 decoration: BoxDecoration(
                   color: color.withValues(alpha: 0.14),
                   borderRadius: BorderRadius.circular(AppRadii.pill),
                   border: Border.all(color: color.withValues(alpha: 0.45)),
                 ),
-                child: Text(label, style: AppText.microLabel.copyWith(color: color)),
+                child: Text(
+                  label,
+                  style: AppText.microLabel.copyWith(color: color),
+                ),
               ),
             ],
           ),
@@ -158,9 +169,15 @@ class _AssignmentCard extends StatelessWidget {
                     '${formatInteger(assignment.program.totalExercises, locale: locale)} ${strings.exercisesCount}',
               ),
               if (assignment.startsOn != null)
-                _MetaChip(text: '${strings.trainStarts} ${formatDate(assignment.startsOn, locale: locale)}'),
+                _MetaChip(
+                  text:
+                      '${strings.trainStarts} ${formatDate(assignment.startsOn, locale: locale)}',
+                ),
               if (assignment.endsOn != null)
-                _MetaChip(text: '${strings.trainEnds} ${formatDate(assignment.endsOn, locale: locale)}'),
+                _MetaChip(
+                  text:
+                      '${strings.trainEnds} ${formatDate(assignment.endsOn, locale: locale)}',
+                ),
             ],
           ),
         ],
@@ -178,7 +195,10 @@ class _MetaChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 4),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm,
+        vertical: 4,
+      ),
       decoration: BoxDecoration(
         color: AppColors.surfaceLight,
         borderRadius: BorderRadius.circular(AppRadii.pill),
@@ -188,10 +208,16 @@ class _MetaChip extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (icon != null) ...[
-            Icon(icon, size: 13, color: AppColors.blueLight),
+            Icon(icon, size: 13, color: AppColors.goldLight),
             const SizedBox(width: 4),
           ],
-          Text(text, style: AppText.microLabel.copyWith(fontSize: 10.5, letterSpacing: 0.2)),
+          Text(
+            text,
+            style: AppText.microLabel.copyWith(
+              fontSize: 10.5,
+              letterSpacing: 0.2,
+            ),
+          ),
         ],
       ),
     );

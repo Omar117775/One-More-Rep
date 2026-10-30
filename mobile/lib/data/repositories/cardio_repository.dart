@@ -36,12 +36,25 @@ class ApiCardioRepository implements CardioRepository {
     final all = <CardioEntry>[];
     var page = 1;
     while (true) {
-      final body = await _client.get('/trainee/cardio', query: {'per_page': '50', 'page': '$page'});
-      final entries = body is List ? body : body is Map && body['data'] is List ? body['data'] as List : [];
+      final body = await _client.get(
+        '/trainee/cardio',
+        query: {'per_page': '50', 'page': '$page'},
+      );
+      final entries = body is List
+          ? body
+          : body is Map && body['data'] is List
+          ? body['data'] as List
+          : [];
       all.addAll(mapList(entries, CardioEntry.fromJson));
-      final meta = body is Map && body['meta'] is Map ? body['meta'] as Map : null;
+      final meta = body is Map && body['meta'] is Map
+          ? body['meta'] as Map
+          : null;
       final raw = meta?['last_page'];
-      final lastPage = raw is num ? raw.toInt() : raw is String ? int.tryParse(raw) : null;
+      final lastPage = raw is num
+          ? raw.toInt()
+          : raw is String
+          ? int.tryParse(raw)
+          : null;
       if (lastPage == null || page >= lastPage || page >= 10) break;
       page++;
     }
@@ -94,5 +107,6 @@ class ApiCardioRepository implements CardioRepository {
   @override
   Future<void> delete(Object? id) => _client.delete('/trainee/cardio/$id');
 
-  dynamic _dataOf(dynamic body) => body is Map && body.containsKey('data') ? body['data'] : body;
+  dynamic _dataOf(dynamic body) =>
+      body is Map && body.containsKey('data') ? body['data'] : body;
 }

@@ -1,17 +1,35 @@
-# mobile
+# One More Rep — Mobile (Trainee App)
 
-A new Flutter project.
+Flutter client for the One More Rep premium fitness platform, built against
+the Laravel REST API (`../backend`). Dark-first premium UI, English/Arabic
+(EN + RTL). Architecture and conventions: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
-## Getting Started
+## Requirements
 
-This project is a starting point for a Flutter application.
+- Flutter (stable) — verified with Flutter 3.47.8 / Dart 3.13.7
+- A running Laravel backend for real data (`../backend`); the app defaults the
+  API base URL to the Android emulator loopback `http://10.0.2.2:8000/api/v1`.
 
-A few resources to get you started if this is your first Flutter project:
+## Run
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+```bash
+flutter pub get
+# device/emulator uses its own loopback: point at your local API host
+flutter run --dart-define=OMR_API_BASE_URL=http://10.0.2.2:8000/api/v1
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- The API base URL can also be changed later in the Settings screen.
+- Language (EN/العربية) switches live in Settings; RTL layouts are supported.
+
+## Checks
+
+```bash
+flutter analyze   # must report "No issues found!"
+flutter test      # unit + widget tests must all pass
+```
+
+## Notes
+
+- Never commit secrets (`.env*`, keys, tokens) — excluded by `.gitignore`;
+  pass configuration via `--dart-define` instead.
+- The bearer token is held in memory only (session-scoped by design).

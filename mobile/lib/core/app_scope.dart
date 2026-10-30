@@ -4,8 +4,11 @@ import 'app_controller.dart';
 
 /// Access the [AppController] from anywhere in the widget tree.
 class AppScope extends InheritedNotifier<AppController> {
-  const AppScope({required AppController controller, required super.child, super.key})
-      : super(notifier: controller);
+  const AppScope({
+    required AppController controller,
+    required super.child,
+    super.key,
+  }) : super(notifier: controller);
 
   static AppController of(BuildContext context) {
     final scope = context.dependOnInheritedWidgetOfExactType<AppScope>();

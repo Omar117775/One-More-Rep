@@ -10,22 +10,22 @@ class CardioActivityOption {
   final String value;
 
   String label(AppStrings strings) => switch (value) {
-        'run' => strings.activityRun,
-        'walk' => strings.activityWalk,
-        'cycling' => strings.activityCycling,
-        'swimming' => strings.activitySwimming,
-        'rowing' => strings.activityRowing,
-        _ => strings.activityOther,
-      };
+    'run' => strings.activityRun,
+    'walk' => strings.activityWalk,
+    'cycling' => strings.activityCycling,
+    'swimming' => strings.activitySwimming,
+    'rowing' => strings.activityRowing,
+    _ => strings.activityOther,
+  };
 
   IconData get icon => switch (value) {
-        'run' => Icons.directions_run,
-        'walk' => Icons.directions_walk,
-        'cycling' => Icons.directions_bike,
-        'swimming' => Icons.pool,
-        'rowing' => Icons.rowing,
-        _ => Icons.more_horiz,
-      };
+    'run' => Icons.directions_run,
+    'walk' => Icons.directions_walk,
+    'cycling' => Icons.directions_bike,
+    'swimming' => Icons.pool,
+    'rowing' => Icons.rowing,
+    _ => Icons.more_horiz,
+  };
 
   static const List<CardioActivityOption> options = [
     CardioActivityOption('run'),

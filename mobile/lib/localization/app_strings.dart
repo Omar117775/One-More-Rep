@@ -38,6 +38,8 @@ class AppStrings {
     required this.homeQuickWorkout,
     required this.homeQuickCardio,
     required this.homeQuickProgress,
+    required this.homeQuickLibrary,
+    required this.homeQuickPrograms,
     required this.homeWorkoutsSummary,
     required this.homeCardioSummary,
     required this.homeBodySummary,
@@ -153,6 +155,147 @@ class AppStrings {
     required this.today,
     required this.last30Days,
     required this.p5LoadingProfile,
+    // Profile (P4 mock)
+    required this.profileTitle,
+    required this.profileJoined,
+    required this.profileStatsHeader,
+    required this.profileStatSessions,
+    required this.profileStatStreak,
+    required this.profileStatVolume,
+    required this.profileWeeklyGoalHeader,
+    required this.profileSessionsShort,
+    required this.profileGoalsHeader,
+    required this.profileEditCta,
+    required this.profileEditToast,
+    required this.profileBodyHeader,
+    required this.profileOpenProgress,
+    required this.unitCentimeters,
+    required this.unitYears,
+    // Nutrition (P4 mock)
+    required this.nutritionTitle,
+    required this.nutritionEnergyHeader,
+    required this.nutritionEstimateChip,
+    required this.nutritionDisclaimer,
+    required this.nutritionTargetLabel,
+    required this.nutritionHistoryHeader,
+    required this.nutritionCalories,
+    required this.nutritionProtein,
+    required this.nutritionCarbs,
+    required this.nutritionFat,
+    required this.nutritionWater,
+    required this.nutritionMealsHeader,
+    required this.mealBreakfast,
+    required this.mealLunch,
+    required this.mealDinner,
+    required this.mealSnack,
+    required this.nutritionAddMeal,
+    required this.nutritionAddMealToast,
+    required this.unitKcal,
+    required this.unitGrams,
+    required this.unitLiter,
+    // Subscriptions / payments / vouchers (P4 mock)
+    required this.subscriptionsTitle,
+    required this.subscriptionsCurrentHeader,
+    required this.subscriptionsDaysRemaining,
+    required this.subscriptionsPlansHeader,
+    required this.planSelectCta,
+    required this.planSelectToast,
+    required this.settingsAccountSection,
+    required this.settingsSubscriptionsRow,
+    required this.paymentsTitle,
+    required this.paymentsReferenceLabel,
+    required this.paymentsReferenceHint,
+    required this.paymentsSubmitCta,
+    required this.paymentsSubmittedToast,
+    required this.paymentsInfoNote,
+    required this.paymentsHistoryHeader,
+    required this.paymentStatusPending,
+    required this.paymentStatusApproved,
+    required this.paymentsPrivacyNote,
+    required this.voucherSectionHeader,
+    required this.voucherCodeLabel,
+    required this.voucherRedeemCta,
+    required this.voucherInfoNote,
+    required this.voucherStatusValid,
+    required this.voucherStatusRedeemed,
+    required this.voucherHistoryHeader,
+    // Exercise library (mock catalog in P5)
+    required this.libraryTitle,
+    required this.librarySearchHint,
+    required this.libraryEmpty,
+    required this.libraryAll,
+    required this.groupChest,
+    required this.groupBack,
+    required this.groupLegs,
+    required this.groupShoulders,
+    required this.groupArms,
+    required this.groupCore,
+    required this.typeStrength,
+    required this.typeCardio,
+    required this.muscleGroupLabel,
+    required this.equipmentLabel,
+    required this.instructionsLabel,
+    required this.difficultyLabel,
+    required this.difficultyBeginner,
+    required this.difficultyIntermediate,
+    required this.difficultyAdvanced,
+    // Workout programs (mock catalog in P5)
+    required this.programsTitle,
+    required this.programWeeksLabel,
+    required this.programSessionsLabel,
+    required this.programLevelLabel,
+    required this.programSchedule,
+    required this.mockPreview,
+    required this.comingSoon,
+    required this.comingSoonToast,
+    // Onboarding
+    this.onboardingTitle1 = 'DISCIPLINE OVER MOTIVATION',
+    this.onboardingDesc1 = 'Consistency is the warrior way. Every repetition brings you closer to peak mastery.',
+    this.onboardingTitle2 = 'PRECISION PERFORMANCE',
+    this.onboardingDesc2 = 'Targeted programs, calculated rest intervals, and transparent progress analytics.',
+    this.onboardingTitle3 = 'ONE MORE REP',
+    this.onboardingDesc3 = 'Shatter your limits. True strength is forged when you push past exhaustion.',
+    this.onboardingSkip = 'Skip',
+    this.onboardingNext = 'Next',
+    this.onboardingStart = 'ENTER THE ARENA',
+    // Auth expansion
+    this.registerTitle = 'CREATE ACCOUNT',
+    this.registerSubtitle = 'Begin your Spartan journey today.',
+    this.fullNameLabel = 'FULL NAME',
+    this.genderLabel = 'GENDER',
+    this.genderMale = 'Male',
+    this.genderFemale = 'Female',
+    this.confirmPasswordLabel = 'CONFIRM PASSWORD',
+    this.registerButton = 'CREATE ACCOUNT',
+    this.alreadyHaveAccount = 'Already have an account? Sign In',
+    this.dontHaveAccount = "Don't have an account? Create one",
+    this.signUpLink = 'Sign Up',
+    this.forgotPasswordLink = 'Forgot Password?',
+    this.forgotPasswordTitle = 'RESET PASSWORD',
+    this.forgotPasswordSubtitle = 'Enter your email to receive recovery instructions.',
+    this.sendResetLink = 'SEND RECOVERY CODE',
+    this.resetSentToast = 'Recovery instructions dispatched (Mock).',
+    this.continueWithGoogle = 'Continue with Google',
+    this.guestDemoButton = 'EXPLORE AS GUEST',
+    // Dynamic mood & trainer
+    this.homeCompanionPR = 'New Personal Record shattered!',
+    this.homeCompanionAchievement = 'Warrior Achievement unlocked!',
+    this.homeCompanionWeeklyGoal = 'Weekly target conquered!',
+    this.homeCompanionAI = 'Spartan Coach active and analyzing.',
+    // AI Trainer, Notifications & Achievements
+    this.aiTrainerTitle = 'SPARTAN AI COACH',
+    this.aiTrainerSubtitle = 'Adaptive Regimen & Intelligent Guidance',
+    this.aiTrainerHint = 'Ask about workouts, form, or nutrition...',
+    this.aiThinking = 'Analyzing your regimen...',
+    this.notificationsTitle = 'NOTIFICATIONS',
+    this.notificationsEmpty = 'No new notifications',
+    this.notificationsMarkAllRead = 'Mark all read',
+    this.achievementsTitle = 'ACHIEVEMENTS',
+    this.achievementsUnlockedCount = 'Unlocked',
+    this.restTimerTitle = 'REST TIMER',
+    this.startRest = 'REST',
+    this.skipRest = 'SKIP REST',
+    this.finishWorkoutCta = 'FINISH WORKOUT',
   });
 
   final String localeName;
@@ -197,6 +340,8 @@ class AppStrings {
   final String homeQuickWorkout;
   final String homeQuickCardio;
   final String homeQuickProgress;
+  final String homeQuickLibrary;
+  final String homeQuickPrograms;
   final String homeWorkoutsSummary;
   final String homeCardioSummary;
   final String homeBodySummary;
@@ -323,6 +468,156 @@ class AppStrings {
   final String last30Days;
   final String p5LoadingProfile;
 
+  // Profile
+  final String profileTitle;
+  final String profileJoined;
+  final String profileStatsHeader;
+  final String profileStatSessions;
+  final String profileStatStreak;
+  final String profileStatVolume;
+  final String profileWeeklyGoalHeader;
+  final String profileSessionsShort;
+  final String profileGoalsHeader;
+  final String profileEditCta;
+  final String profileEditToast;
+  final String profileBodyHeader;
+  final String profileOpenProgress;
+  final String unitCentimeters;
+  final String unitYears;
+
+  // Nutrition
+  final String nutritionTitle;
+  final String nutritionEnergyHeader;
+  final String nutritionEstimateChip;
+  final String nutritionDisclaimer;
+  final String nutritionTargetLabel;
+  final String nutritionHistoryHeader;
+  final String nutritionCalories;
+  final String nutritionProtein;
+  final String nutritionCarbs;
+  final String nutritionFat;
+  final String nutritionWater;
+  final String nutritionMealsHeader;
+  final String mealBreakfast;
+  final String mealLunch;
+  final String mealDinner;
+  final String mealSnack;
+  final String nutritionAddMeal;
+  final String nutritionAddMealToast;
+  final String unitKcal;
+  final String unitGrams;
+  final String unitLiter;
+
+  // Subscriptions / payments / vouchers
+  final String subscriptionsTitle;
+  final String subscriptionsCurrentHeader;
+  final String subscriptionsDaysRemaining;
+  final String subscriptionsPlansHeader;
+  final String planSelectCta;
+  final String planSelectToast;
+  final String settingsAccountSection;
+  final String settingsSubscriptionsRow;
+  final String paymentsTitle;
+  final String paymentsReferenceLabel;
+  final String paymentsReferenceHint;
+  final String paymentsSubmitCta;
+  final String paymentsSubmittedToast;
+  final String paymentsInfoNote;
+  final String paymentsHistoryHeader;
+  final String paymentStatusPending;
+  final String paymentStatusApproved;
+  final String paymentsPrivacyNote;
+  final String voucherSectionHeader;
+  final String voucherCodeLabel;
+  final String voucherRedeemCta;
+  final String voucherInfoNote;
+  final String voucherStatusValid;
+  final String voucherStatusRedeemed;
+  final String voucherHistoryHeader;
+
+  // Exercise library (P5)
+  final String libraryTitle;
+  final String librarySearchHint;
+  final String libraryEmpty;
+  final String libraryAll;
+  final String groupChest;
+  final String groupBack;
+  final String groupLegs;
+  final String groupShoulders;
+  final String groupArms;
+  final String groupCore;
+  final String typeStrength;
+  final String typeCardio;
+  final String muscleGroupLabel;
+  final String equipmentLabel;
+  final String instructionsLabel;
+  final String difficultyLabel;
+  final String difficultyBeginner;
+  final String difficultyIntermediate;
+  final String difficultyAdvanced;
+
+  // Workout programs
+  final String programsTitle;
+  final String programWeeksLabel;
+  final String programSessionsLabel;
+  final String programLevelLabel;
+  final String programSchedule;
+  final String mockPreview;
+  final String comingSoon;
+  final String comingSoonToast;
+
+  // Onboarding
+  final String onboardingTitle1;
+  final String onboardingDesc1;
+  final String onboardingTitle2;
+  final String onboardingDesc2;
+  final String onboardingTitle3;
+  final String onboardingDesc3;
+  final String onboardingSkip;
+  final String onboardingNext;
+  final String onboardingStart;
+
+  // Auth expansion
+  final String registerTitle;
+  final String registerSubtitle;
+  final String fullNameLabel;
+  final String genderLabel;
+  final String genderMale;
+  final String genderFemale;
+  final String confirmPasswordLabel;
+  final String registerButton;
+  final String alreadyHaveAccount;
+  final String dontHaveAccount;
+  final String signUpLink;
+  final String forgotPasswordLink;
+  final String forgotPasswordTitle;
+  final String forgotPasswordSubtitle;
+  final String sendResetLink;
+  final String resetSentToast;
+  final String continueWithGoogle;
+  final String guestDemoButton;
+
+  // Dynamic mood & trainer
+  final String homeCompanionPR;
+  final String homeCompanionAchievement;
+  final String homeCompanionWeeklyGoal;
+  final String homeCompanionAI;
+
+  // AI Trainer, Notifications & Achievements
+  final String aiTrainerTitle;
+  final String aiTrainerSubtitle;
+  final String aiTrainerHint;
+  final String aiThinking;
+  final String notificationsTitle;
+  final String notificationsEmpty;
+  final String notificationsMarkAllRead;
+  final String achievementsTitle;
+  final String achievementsUnlockedCount;
+  final String restTimerTitle;
+  final String startRest;
+  final String skipRest;
+  final String finishWorkoutCta;
+
   static const AppStrings english = _en;
   static const AppStrings arabic = _ar;
   static const AppStrings fallback = _en;
@@ -383,6 +678,8 @@ const _en = AppStrings(
   homeQuickWorkout: 'Log workout',
   homeQuickCardio: 'Add cardio',
   homeQuickProgress: 'Add measurement',
+  homeQuickLibrary: 'Exercise library',
+  homeQuickPrograms: 'Programs',
   homeWorkoutsSummary: 'Workouts • 30 days',
   homeCardioSummary: 'Cardio • 30 days',
   homeBodySummary: 'Body weight',
@@ -500,6 +797,101 @@ const _en = AppStrings(
   today: 'Today',
   last30Days: 'LAST 30 DAYS',
   p5LoadingProfile: 'Loading your profile…',
+  profileTitle: 'Profile',
+  profileJoined: 'Joined',
+  profileStatsHeader: 'TRAINING STATS',
+  profileStatSessions: 'Sessions completed',
+  profileStatStreak: 'Current streak',
+  profileStatVolume: 'Volume • 30 days',
+  profileWeeklyGoalHeader: 'WEEKLY GOAL',
+  profileSessionsShort: 'sessions',
+  profileGoalsHeader: 'GOALS SUMMARY',
+  profileEditCta: 'Edit profile',
+  profileEditToast: 'Profile editing arrives with the backend. Coming soon.',
+  profileBodyHeader: 'BODY AT A GLANCE',
+  profileOpenProgress: 'Open progress',
+  unitCentimeters: 'cm',
+  unitYears: 'years',
+  nutritionTitle: 'Nutrition',
+  nutritionEnergyHeader: 'DAILY ENERGY',
+  nutritionEstimateChip: 'ESTIMATE',
+  nutritionDisclaimer:
+      'Daily energy is a Mifflin-St Jeor estimate computed from your '
+      'profile stats. It is an estimate — not a measured record.',
+  nutritionTargetLabel: 'Target',
+  nutritionHistoryHeader: 'HISTORY',
+  nutritionCalories: 'CALORIES',
+  nutritionProtein: 'PROTEIN',
+  nutritionCarbs: 'CARBS',
+  nutritionFat: 'FAT',
+  nutritionWater: 'WATER',
+  nutritionMealsHeader: 'MEAL LOG',
+  mealBreakfast: 'Breakfast',
+  mealLunch: 'Lunch',
+  mealDinner: 'Dinner',
+  mealSnack: 'Snack',
+  nutritionAddMeal: 'Add meal',
+  nutritionAddMealToast: 'Meal logging arrives with the backend. Coming soon.',
+  unitKcal: 'kcal',
+  unitGrams: 'g',
+  unitLiter: 'L',
+  subscriptionsTitle: 'Subscriptions',
+  subscriptionsCurrentHeader: 'CURRENT PLAN',
+  subscriptionsDaysRemaining: 'days remaining',
+  subscriptionsPlansHeader: 'AVAILABLE PLANS',
+  planSelectCta: 'Select plan',
+  planSelectToast:
+      'Plan enrollment and pricing are handled by the backend. Coming soon.',
+  settingsAccountSection: 'ACCOUNT',
+  settingsSubscriptionsRow: 'Subscriptions & payments',
+  paymentsTitle: 'Payments',
+  paymentsReferenceLabel: 'PAYMENT REFERENCE',
+  paymentsReferenceHint: 'Vodafone Cash reference number',
+  paymentsSubmitCta: 'Submit reference',
+  paymentsSubmittedToast: 'Reference recorded — pending admin approval.',
+  paymentsInfoNote:
+      'Payments are never confirmed in this app. A super admin reviews '
+      'every reference before activation.',
+  paymentsHistoryHeader: 'PAYMENT HISTORY',
+  paymentStatusPending: 'Pending',
+  paymentStatusApproved: 'Approved',
+  paymentsPrivacyNote: 'Card numbers are never requested or stored.',
+  voucherSectionHeader: 'VOUCHERS',
+  voucherCodeLabel: 'VOUCHER CODE',
+  voucherRedeemCta: 'Redeem code',
+  voucherInfoNote:
+      'Voucher codes are validated server-side. In the real system the '
+      'backend checks validity and usage rules.',
+  voucherStatusValid: 'Valid',
+  voucherStatusRedeemed: 'Redeemed',
+  voucherHistoryHeader: 'REDEMPTIONS',
+  libraryTitle: 'Exercise Library',
+  librarySearchHint: 'Search exercises…',
+  libraryEmpty: 'No exercises match your search',
+  libraryAll: 'All',
+  groupChest: 'Chest',
+  groupBack: 'Back',
+  groupLegs: 'Legs',
+  groupShoulders: 'Shoulders',
+  groupArms: 'Arms',
+  groupCore: 'Core',
+  typeStrength: 'Strength',
+  typeCardio: 'Cardio',
+  muscleGroupLabel: 'MUSCLE GROUP',
+  equipmentLabel: 'EQUIPMENT',
+  instructionsLabel: 'INSTRUCTIONS',
+  difficultyLabel: 'DIFFICULTY',
+  difficultyBeginner: 'Beginner',
+  difficultyIntermediate: 'Intermediate',
+  difficultyAdvanced: 'Advanced',
+  programsTitle: 'Workout Programs',
+  programWeeksLabel: 'WEEKS',
+  programSessionsLabel: 'SESSIONS / WEEK',
+  programLevelLabel: 'LEVEL',
+  programSchedule: 'WEEKLY SCHEDULE',
+  mockPreview: 'MOCK PREVIEW',
+  comingSoon: 'Coming soon',
+  comingSoonToast: 'Program enrollment ships with the backend. Stay tuned.',
 );
 
 const _ar = AppStrings(
@@ -537,6 +929,8 @@ const _ar = AppStrings(
   homeQuickWorkout: 'سجّل تمريناً',
   homeQuickCardio: 'أضف كارديو',
   homeQuickProgress: 'أضف قياساً',
+  homeQuickLibrary: 'مكتبة التمارين',
+  homeQuickPrograms: 'البرامج',
   homeWorkoutsSummary: 'تمارين • ٣٠ يوماً',
   homeCardioSummary: 'كارديو • ٣٠ يوماً',
   homeBodySummary: 'وزن الجسم',
@@ -652,6 +1046,148 @@ const _ar = AppStrings(
   today: 'اليوم',
   last30Days: 'آخر ٣٠ يوماً',
   p5LoadingProfile: 'جارٍ تحميل ملفك…',
+  profileTitle: 'الملف الشخصي',
+  profileJoined: 'انضم في',
+  profileStatsHeader: 'إحصائيات التدريب',
+  profileStatSessions: 'الجلسات المكتملة',
+  profileStatStreak: 'السلسلة الحالية',
+  profileStatVolume: 'الحجم • ٣٠ يوماً',
+  profileWeeklyGoalHeader: 'الهدف الأسبوعي',
+  profileSessionsShort: 'جلسات',
+  profileGoalsHeader: 'ملخص الأهداف',
+  profileEditCta: 'تعديل الملف الشخصي',
+  profileEditToast: 'تعديل الملف الشخصي سيصل مع الخادم. قريباً.',
+  profileBodyHeader: 'الجسم بنظرة',
+  profileOpenProgress: 'افتح التقدم',
+  unitCentimeters: 'سم',
+  unitYears: 'سنة',
+  nutritionTitle: 'التغذية',
+  nutritionEnergyHeader: 'الطاقة اليومية',
+  nutritionEstimateChip: 'تقدير',
+  nutritionDisclaimer:
+      'الطاقة اليومية تقدير بمعادلة Mifflin-St Jeor محسوب من قياسات ملفك. '
+      'هو تقدير — وليس سجلاً مقاساً.',
+  nutritionTargetLabel: 'الهدف',
+  nutritionHistoryHeader: 'السجل',
+  nutritionCalories: 'السعرات',
+  nutritionProtein: 'البروتين',
+  nutritionCarbs: 'الكربوهيدرات',
+  nutritionFat: 'الدهون',
+  nutritionWater: 'الماء',
+  nutritionMealsHeader: 'سجل الوجبات',
+  mealBreakfast: 'الفطور',
+  mealLunch: 'الغداء',
+  mealDinner: 'العشاء',
+  mealSnack: 'وجبة خفيفة',
+  nutritionAddMeal: 'أضف وجبة',
+  nutritionAddMealToast: 'سجل الوجبات سيصل مع الخادم. قريباً.',
+  unitKcal: 'سعرة',
+  unitGrams: 'غ',
+  unitLiter: 'ل',
+  subscriptionsTitle: 'الاشتراكات',
+  subscriptionsCurrentHeader: 'الخطة الحالية',
+  subscriptionsDaysRemaining: 'يوم متبقٍ',
+  subscriptionsPlansHeader: 'الخطط المتاحة',
+  planSelectCta: 'اختر الخطة',
+  planSelectToast: 'الاشتراك والأسعار تُدار من الخادم. قريباً.',
+  settingsAccountSection: 'الحساب',
+  settingsSubscriptionsRow: 'الاشتراكات والمدفوعات',
+  paymentsTitle: 'المدفوعات',
+  paymentsReferenceLabel: 'المرجع',
+  paymentsReferenceHint: 'رقم مرجع فودافون كاش',
+  paymentsSubmitCta: 'إرسال المرجع',
+  paymentsSubmittedToast: 'سُجّل المرجع — بانتظار موافقة المدير.',
+  paymentsInfoNote:
+      'لا يتم تأكيد أي دفعة من هذا التطبيق أبداً. يراجع المدير الأعلى كل '
+      'مرجع قبل التفعيل.',
+  paymentsHistoryHeader: 'سجل المدفوعات',
+  paymentStatusPending: 'قيد المراجعة',
+  paymentStatusApproved: 'مقبول',
+  paymentsPrivacyNote: 'لا تُطلب أرقام البطاقات أبداً ولا تُخزّن.',
+  voucherSectionHeader: 'القسائم',
+  voucherCodeLabel: 'رمز القسيمة',
+  voucherRedeemCta: 'استخدام الرمز',
+  voucherInfoNote:
+      'تُتحقق رموز القسائم على الخادم. في النظام الفعلي يتحقق الخادم من '
+      'الصلاحية وقواعد الاستخدام.',
+  voucherStatusValid: 'صالحة',
+  voucherStatusRedeemed: 'مستخدمة',
+  voucherHistoryHeader: 'الاستخدامات',
+  libraryTitle: 'مكتبة التمارين',
+  librarySearchHint: 'ابحث عن تمارين…',
+  libraryEmpty: 'لا توجد تمارين مطابقة للبحث',
+  libraryAll: 'الكل',
+  groupChest: 'الصدر',
+  groupBack: 'الظهر',
+  groupLegs: 'الأرجل',
+  groupShoulders: 'الأكتاف',
+  groupArms: 'الذراعان',
+  groupCore: 'البطن',
+  typeStrength: 'قوة',
+  typeCardio: 'كارديو',
+  muscleGroupLabel: 'المجموعة العضلية',
+  equipmentLabel: 'المعدات',
+  instructionsLabel: 'التعليمات',
+  difficultyLabel: 'الصعوبة',
+  difficultyBeginner: 'مبتدئ',
+  difficultyIntermediate: 'متوسط',
+  difficultyAdvanced: 'متقدم',
+  programsTitle: 'برامج التمرين',
+  programWeeksLabel: 'أسابيع',
+  programSessionsLabel: 'حصص أسبوعياً',
+  programLevelLabel: 'المستوى',
+  programSchedule: 'الجدول الأسبوعي',
+  mockPreview: 'عرض تجريبي',
+  comingSoon: 'قريباً',
+  comingSoonToast: 'سيصلك تسجيل البرامج مع الخادم. ترقب.',
+  // Onboarding
+  onboardingTitle1: 'الانضباط أساس القوة',
+  onboardingDesc1: 'الاستمرارية هي عقلية المحارب. كل تكرار يقربك من هدفك.',
+  onboardingTitle2: 'أداء احترافي دقيق',
+  onboardingDesc2: 'برامج تدريبية متخصصة، فترات راحة محسوبة، وتحليلات واضحة لتقدمك.',
+  onboardingTitle3: 'تكرار إضافي واحد',
+  onboardingDesc3: 'اكسر حدودك. القوة الحقيقية تُصنع عندما تتجاوز التعب.',
+  onboardingSkip: 'تخطي',
+  onboardingNext: 'التالي',
+  onboardingStart: 'ادخل الحلبة',
+  // Auth
+  registerTitle: 'إنشاء حساب جديد',
+  registerSubtitle: 'ابدأ مسارك التدريبي اليوم.',
+  fullNameLabel: 'الاسم الكامل',
+  genderLabel: 'الجنس',
+  genderMale: 'ذكر',
+  genderFemale: 'أنثى',
+  confirmPasswordLabel: 'تأكيد كلمة المرور',
+  registerButton: 'إنشاء الحساب',
+  alreadyHaveAccount: 'لديك حساب بالفعل؟ سجّل الدخول',
+  dontHaveAccount: 'ليس لديك حساب؟ أنشئ واحداً',
+  signUpLink: 'إنشاء حساب',
+  forgotPasswordLink: 'نسيت كلمة المرور؟',
+  forgotPasswordTitle: 'استعادة كلمة المرور',
+  forgotPasswordSubtitle: 'أدخل بريدك الإلكتروني لتلقي تعليمات الاستعادة.',
+  sendResetLink: 'إرسال رمز الاستعادة',
+  resetSentToast: 'تم إرسال تعليمات الاستعادة (عرض تجريبي).',
+  continueWithGoogle: 'المتابعة باستخدام Google',
+  guestDemoButton: 'الدخول السريع كزائر تجريبي',
+  // Dynamic Spartan
+  homeCompanionPR: 'رقم قياسي شخصي جديد!',
+  homeCompanionAchievement: 'تم فتح إنجاز محارب جديد!',
+  homeCompanionWeeklyGoal: 'تم تحقيق هدف الأسبوع!',
+  homeCompanionAI: 'المدرب الذكي نشط وجاهز.',
+  // AI, Notifications, Achievements
+  aiTrainerTitle: 'مدرب سبارتا الذكي',
+  aiTrainerSubtitle: 'توجيه ذكي ونظام تدريبي مخصص',
+  aiTrainerHint: 'اسأل عن التمارين، التغذية، أو التكنيك...',
+  aiThinking: 'جارٍ تحليل بيانات تدريبك...',
+  notificationsTitle: 'الإشعارات',
+  notificationsEmpty: 'لا توجد إشعارات جديدة',
+  notificationsMarkAllRead: 'تحديد الكل كمقروء',
+  achievementsTitle: 'الإنجازات',
+  achievementsUnlockedCount: 'مكتمل',
+  restTimerTitle: 'مؤقت الراحة',
+  startRest: 'راحة',
+  skipRest: 'تخطي الراحة',
+  finishWorkoutCta: 'إنهاء التمرين',
 );
 
 /// Supported locales: English (LTR) and Arabic (RTL).

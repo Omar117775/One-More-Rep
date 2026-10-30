@@ -2,19 +2,48 @@ import 'package:flutter/material.dart';
 
 /// Central design tokens for the One More Rep trainee app.
 /// Never hardcode colors, spacing, radii or durations in feature code.
+///
+/// Palette: premium black base with metallic gold primary accents and warm
+/// bronze secondary accents (spartan identity). Dark-first.
 abstract final class AppColors {
-  static const background = Color(0xFF080D16);
-  static const surface = Color(0xFF111A29);
-  static const surfaceLight = Color(0xFF19263A);
-  static const blue = Color(0xFF2864F0);
-  static const blueLight = Color(0xFF65A0FF);
-  static const white = Color(0xFFF5F7FC);
-  static const muted = Color(0xFF8B98AD);
-  static const border = Color(0xFF26364D);
-  static const success = Color(0xFF34C98A);
-  static const danger = Color(0xFFFF5D6E);
-  static const warning = Color(0xFFF5B83D);
-  static const barrier = Color(0xF0060B14);
+  // Brand Spartan Palette (Exact Specification)
+  static const deepBlack = Color(0xFF080808);
+  static const secondaryBlack = Color(0xFF111111);
+  static const darkGraphite = Color(0xFF191919);
+  static const metallicGold = Color(0xFFC6A15B);
+  static const metallicBronze = Color(0xFF9B763B);
+  static const warmWhite = Color(0xFFF3F0E8);
+  static const neutralGray = Color(0xFF929292);
+
+  // Surface and Background Mappings
+  static const background = deepBlack;
+  /// Warm ember-black top of dark ambient gradients (splash, hero headers).
+  static const backgroundAmbient = Color(0xFF14120E);
+  static const surface = secondaryBlack;
+  static const surfaceLight = darkGraphite;
+  static const border = Color(0xFF262420);
+  static const gold = metallicGold;
+  static const goldLight = Color(0xFFDFC07A);
+  static const goldDim = Color(0xFF7E6430);
+  static const bronze = metallicBronze;
+  /// Ink color used on top of gold/bronze accent fills for AA contrast.
+  static const onAccent = deepBlack;
+  static const white = warmWhite;
+  static const muted = neutralGray;
+  static const success = Color(0xFF2ECC71);
+  static const danger = Color(0xFFE74C3C);
+  static const warning = Color(0xFFE5A93C);
+  static const barrier = Color(0xF0080808);
+}
+
+/// Light-surface tokens for the optional light variant (dark stays primary).
+abstract final class AppColorsLight {
+  static const background = Color(0xFFFAF7F0);
+  static const surface = Color(0xFFF1ECE1);
+  static const surfaceLight = Color(0xFFE6E0D1);
+  static const border = Color(0xFFD9D2C0);
+  static const text = Color(0xFF1B1917);
+  static const muted = Color(0xFF6E675C);
 }
 
 abstract final class AppSpacing {

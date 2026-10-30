@@ -56,7 +56,11 @@ Map<String, dynamic> buildProgressPayload({
   double? chestCm,
   double? armCm,
 }) {
-  final measured = DateTime.utc(measuredOn.year, measuredOn.month, measuredOn.day);
+  final measured = DateTime.utc(
+    measuredOn.year,
+    measuredOn.month,
+    measuredOn.day,
+  );
   return {
     'measured_on': formatDateYdm(measured),
     'weight_kg': ?weightKg,

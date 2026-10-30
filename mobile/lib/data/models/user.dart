@@ -1,4 +1,5 @@
 import 'package:mobile/core/api_exception.dart';
+
 import '../../core/parsing.dart';
 
 /// Authenticated trainee profile.
@@ -29,7 +30,9 @@ class User {
       id: raw['id'],
       name: raw['name']?.toString() ?? '',
       email: raw['email']?.toString() ?? '',
-      roles: rolesRaw is List ? rolesRaw.map((r) => r.toString()).toList() : const [],
+      roles: rolesRaw is List
+          ? rolesRaw.map((r) => r.toString()).toList()
+          : const [],
     );
   }
 
@@ -38,7 +41,12 @@ class User {
 
 /// Login result: token + fresh user.
 class LoginResult {
-  const LoginResult({required this.token, required this.tokenType, this.expiresAt, required this.user});
+  const LoginResult({
+    required this.token,
+    required this.tokenType,
+    this.expiresAt,
+    required this.user,
+  });
 
   final String token;
   final String tokenType;
@@ -49,12 +57,20 @@ class LoginResult {
 /// Decodes a login payload of shape `{data:{token,token_type,expires_at,user}}`.
 LoginResult parseLoginResponse(dynamic body) {
   if (body is! Map || body['data'] is! Map) {
-    throw const ApiException(message: 'malformed', kind: ApiExceptionKind.server, statusCode: 500);
+    throw const ApiException(
+      message: 'malformed',
+      kind: ApiExceptionKind.server,
+      statusCode: 500,
+    );
   }
   final data = body['data'] as Map;
   final token = data['token'];
   if (token is! String || token.isEmpty) {
-    throw const ApiException(message: 'missing token', kind: ApiExceptionKind.server, statusCode: 500);
+    throw const ApiException(
+      message: 'missing token',
+      kind: ApiExceptionKind.server,
+      statusCode: 500,
+    );
   }
   return LoginResult(
     token: token,

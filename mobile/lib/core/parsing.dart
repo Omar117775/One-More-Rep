@@ -9,7 +9,8 @@ double? parseDecimal(Object? raw) {
   if (raw is String) {
     final cleaned = raw.trim();
     if (cleaned.isEmpty) return null;
-    return double.tryParse(cleaned) ?? double.tryParse(cleaned.replaceAll(',', '.'));
+    return double.tryParse(cleaned) ??
+        double.tryParse(cleaned.replaceAll(',', '.'));
   }
   return null;
 }
@@ -46,7 +47,8 @@ DateTime? parseDate(Object? raw) {
     final parts = value.split('-').map(int.parse).toList();
     return DateTime.utc(parts[0], parts[1], parts[2]);
   }
-  return DateTime.tryParse(value.replaceFirst(' ', 'T')) ?? DateTime.tryParse(value);
+  return DateTime.tryParse(value.replaceFirst(' ', 'T')) ??
+      DateTime.tryParse(value);
 }
 
 String? formatDateYdm(DateTime? date) {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../design/brand/shell_icons.dart';
 import '../../design/tokens.dart';
 import '../../localization/app_strings.dart';
 import '../cardio/cardio_screen.dart';
@@ -9,7 +10,8 @@ import '../settings/settings_screen.dart';
 import '../train/train_screen.dart';
 
 /// Responsive app shell: bottom navigation bar on phones, navigation rail
-/// on wide screens. IndexedStack keeps tab state alive.
+/// on wide screens. IndexedStack keeps tab state alive. Destination icons
+/// are original code-drawn animated slots (see lib/design/brand).
 class AppShell extends StatefulWidget {
   const AppShell({super.key});
 
@@ -19,6 +21,14 @@ class AppShell extends StatefulWidget {
 
 class _AppShellState extends State<AppShell> {
   int _index = 0;
+
+  static const List<ShellIconKind> _kinds = [
+    ShellIconKind.home,
+    ShellIconKind.train,
+    ShellIconKind.cardio,
+    ShellIconKind.progress,
+    ShellIconKind.settings,
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -54,13 +64,24 @@ class _AppShellState extends State<AppShell> {
               extended: false,
               minExtendedWidth: 140,
               destinations: [
-                for (final label in destinations)
+                for (var i = 0; i < destinations.length; i++)
                   NavigationRailDestination(
-                      icon: Icon(iconFor(destinations.indexOf(label))), label: Text(label)),
+                    icon: AnimatedIconSlot(
+                      kind: _kinds[i],
+                      selected: false,
+                    ),
+                    selectedIcon: AnimatedIconSlot(
+                      kind: _kinds[i],
+                      selected: true,
+                    ),
+                    label: Text(destinations[i]),
+                  ),
               ],
             ),
             const VerticalDivider(width: 1),
-            Expanded(child: IndexedStack(index: _index, children: screens)),
+            Expanded(
+              child: IndexedStack(index: _index, children: screens),
+            ),
           ],
         ),
       );
@@ -68,28 +89,56 @@ class _AppShellState extends State<AppShell> {
 
     return Scaffold(
       body: IndexedStack(index: _index, children: screens),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _index,
-        onDestinationSelected: goTo,
-        destinations: [
-          for (var i = 0; i < destinations.length; i++)
-            NavigationDestination(
-              icon: Icon(iconFor(i)),
-              selectedIcon: Icon(iconFor(i, selected: true)),
-              label: destinations[i],
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.md,
+            0,
+            AppSpacing.md,
+            AppSpacing.sm,
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              color: AppColors.darkGraphite.withValues(alpha: 0.96),
+              borderRadius: BorderRadius.circular(AppRadii.lg),
+              border: Border.all(
+                color: AppColors.metallicGold.withValues(alpha: 0.28),
+                width: 1.2,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.45),
+                  blurRadius: 24,
+                  offset: const Offset(0, 8),
+                ),
+                BoxShadow(
+                  color: AppColors.metallicGold.withValues(alpha: 0.08),
+                  blurRadius: 16,
+                  spreadRadius: 1,
+                ),
+              ],
             ),
-        ],
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(AppRadii.lg),
+              child: NavigationBar(
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                height: 68,
+                selectedIndex: _index,
+                onDestinationSelected: goTo,
+                destinations: [
+                  for (var i = 0; i < destinations.length; i++)
+                    NavigationDestination(
+                      icon: AnimatedIconSlot(kind: _kinds[i], selected: false),
+                      selectedIcon: AnimatedIconSlot(kind: _kinds[i], selected: true),
+                      label: destinations[i],
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
-  }
-
-  IconData iconFor(int index, {bool selected = false}) {
-    return switch (index) {
-      0 => (selected ? Icons.home_rounded : Icons.home_outlined),
-      1 => (selected ? Icons.fitness_center : Icons.fitness_center_outlined),
-      2 => (selected ? Icons.directions_run : Icons.directions_run_outlined),
-      3 => (selected ? Icons.insights : Icons.insights_outlined),
-      _ => (selected ? Icons.settings : Icons.settings_outlined),
-    };
   }
 }

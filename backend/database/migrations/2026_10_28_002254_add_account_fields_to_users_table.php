@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -6,9 +7,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
@@ -20,14 +18,16 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
             $table->dropIndex(['is_active']);
-            $table->dropColumn(['is_active', 'locale', 'timezone', 'last_login_at']);
+            $table->dropColumn([
+                'is_active',
+                'locale',
+                'timezone',
+                'last_login_at',
+            ]);
         });
     }
 };

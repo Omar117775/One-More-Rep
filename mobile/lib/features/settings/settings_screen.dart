@@ -2,10 +2,17 @@ import 'package:flutter/material.dart';
 
 import '../../components/common.dart';
 import '../../core/app_scope.dart';
+import '../../design/brand/spartan_emblem.dart';
+import '../../design/motion/pressable_scale.dart';
 import '../../design/tokens.dart';
 import '../../localization/app_strings.dart';
+import '../notifications/notifications_screen.dart';
+import '../profile/profile_screen.dart';
+import '../subscriptions/subscriptions_screen.dart';
 
-/// Settings: language toggle (rebuilds all screens), API base URL, sign out.
+/// Settings: language toggle (rebuilds all screens), account navigation,
+/// about info, and sign out.
+/// Grouped layered-black sections with gold section markers.
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
 
@@ -14,30 +21,6 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  late final TextEditingController _apiUrlController;
-  bool _savedFlash = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _apiUrlController = TextEditingController();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final url = AppScope.of(context).apiBaseUrl;
-    if (_apiUrlController.text != url) {
-      _apiUrlController.text = url;
-    }
-  }
-
-  @override
-  void dispose() {
-    _apiUrlController.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     final strings = AppStrings.of(context);
@@ -47,11 +30,46 @@ class _SettingsScreenState extends State<SettingsScreen> {
       appBar: AppBar(title: Text(strings.settingsTitle)),
       body: Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: AppBreakpoints.contentMax),
+          constraints: const BoxConstraints(
+            maxWidth: AppBreakpoints.contentMax,
+          ),
           child: ListView(
             padding: const EdgeInsets.all(AppSpacing.lg),
             children: [
-              Text(strings.languageSection, style: AppText.caption),
+              _SectionLabel(text: strings.settingsAccountSection),
+              const SizedBox(height: AppSpacing.sm),
+              OmrCard(
+                padding: EdgeInsets.zero,
+                child: Column(
+                  children: [
+                    _SettingsNavRow(
+                      icon: Icons.person_outline,
+                      title: 'Trainee Profile',
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(builder: (_) => const ProfileScreen()),
+                      ),
+                    ),
+                    const Divider(height: 1),
+                    _SettingsNavRow(
+                      icon: Icons.card_membership_outlined,
+                      title: strings.settingsSubscriptionsRow,
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(builder: (_) => const SubscriptionsScreen()),
+                      ),
+                    ),
+                    const Divider(height: 1),
+                    _SettingsNavRow(
+                      icon: Icons.notifications_outlined,
+                      title: strings.notificationsTitle,
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(builder: (_) => const NotificationsScreen()),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              _SectionLabel(text: strings.languageSection),
               const SizedBox(height: AppSpacing.sm),
               OmrCard(
                 child: Column(
@@ -71,45 +89,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
               const SizedBox(height: AppSpacing.lg),
-              Text(strings.apiSection, style: AppText.caption),
+              _SectionLabel(text: strings.aboutSection),
               const SizedBox(height: AppSpacing.sm),
               OmrCard(
-                child: Column(
+                child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    OmrTextField(
-                      label: strings.apiBaseUrl,
-                      controller: _apiUrlController,
-                      keyboardType: TextInputType.url,
-                      autoValidate: AutovalidateMode.disabled,
-                    ),
-                    const SizedBox(height: AppSpacing.sm),
-                    if (_savedFlash)
-                      Text(strings.savedNote, style: AppText.secondary.copyWith(color: AppColors.success)),
-                    const SizedBox(height: AppSpacing.sm),
-                    SizedBox(
-                      height: AppSpacing.touchTarget,
-                      child: OutlinedButton(
-                        onPressed: () {
-                          controller.setApiBaseUrl(_apiUrlController.text);
-                          setState(() => _savedFlash = true);
-                        },
-                        child: Text(strings.saveApiUrl),
+                    const SpartanEmblem(size: 40, emphasis: 1.1),
+                    const SizedBox(width: AppSpacing.md),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(strings.appVersionLabel, style: AppText.body),
+                          const SizedBox(height: AppSpacing.xs),
+                          Text(strings.profileNote, style: AppText.secondary),
+                        ],
                       ),
                     ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              Text(strings.aboutSection, style: AppText.caption),
-              const SizedBox(height: AppSpacing.sm),
-              OmrCard(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(strings.appVersionLabel, style: AppText.body),
-                    const SizedBox(height: AppSpacing.xs),
-                    Text(strings.profileNote, style: AppText.secondary),
                   ],
                 ),
               ),
@@ -117,7 +114,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               SizedBox(
                 height: AppSpacing.touchTarget + 4,
                 child: FilledButton.icon(
-                  style: FilledButton.styleFrom(backgroundColor: AppColors.danger),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: AppColors.danger,
+                  ),
                   icon: const Icon(Icons.logout),
                   label: Text(strings.signOut),
                   onPressed: _confirmSignOut,
@@ -156,6 +155,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 }
 
+/// Cap-style section label with a gold marker — the settings equivalent of
+/// the Home section headers, kept lighter than full SectionHeader titles.
+class _SectionLabel extends StatelessWidget {
+  const _SectionLabel({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          width: 4,
+          height: 14,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppRadii.pill),
+            color: AppColors.goldLight,
+          ),
+        ),
+        const SizedBox(width: AppSpacing.sm),
+        Text(
+          text.toUpperCase(),
+          style: AppText.microLabel.copyWith(letterSpacing: 1.1),
+        ),
+      ],
+    );
+  }
+}
+
 class _LanguageTile extends StatelessWidget {
   const _LanguageTile({
     required this.title,
@@ -169,27 +197,88 @@ class _LanguageTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = selected ? AppColors.blueLight : AppColors.muted;
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(AppRadii.md),
-      child: Container(
-        constraints: const BoxConstraints(minHeight: AppSpacing.touchTarget),
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
-        child: Row(
-          children: [
-            Icon(selected ? Icons.check_circle : Icons.radio_button_unchecked, color: color, size: 22),
-            const SizedBox(width: AppSpacing.md),
-            Expanded(child: Text(title, style: AppText.body)),
-            Icon(
-              Icons.translate,
-              size: 20,
-              color: selected ? AppColors.blueLight : AppColors.muted,
-            ),
-          ],
+    final color = selected ? AppColors.goldLight : AppColors.muted;
+    return PressableScale(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppRadii.md),
+        child: Container(
+          constraints: const BoxConstraints(minHeight: AppSpacing.touchTarget),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: AppSpacing.sm,
+          ),
+          child: Row(
+            children: [
+              Icon(
+                selected ? Icons.check_circle : Icons.radio_button_unchecked,
+                color: color,
+                size: 22,
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Text(
+                  title,
+                  style: selected
+                      ? AppText.body.copyWith(color: AppColors.goldLight)
+                      : AppText.body,
+                ),
+              ),
+              Icon(
+                Icons.translate,
+                size: 20,
+                color: selected ? AppColors.goldLight : AppColors.muted,
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
+class _SettingsNavRow extends StatelessWidget {
+  const _SettingsNavRow({
+    required this.icon,
+    required this.title,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String title;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppRadii.md),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: AppSpacing.sm + 2,
+          ),
+          child: Row(
+            children: [
+              Icon(icon, color: AppColors.metallicGold, size: 20),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Text(
+                  title,
+                  style: AppText.title.copyWith(fontSize: 14),
+                ),
+              ),
+              const Icon(
+                Icons.chevron_right,
+                color: AppColors.neutralGray,
+                size: 18,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

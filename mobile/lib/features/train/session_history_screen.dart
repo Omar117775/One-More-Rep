@@ -178,6 +178,9 @@ class _SessionHistoryScreenState extends State<SessionHistoryScreen> {
                                     ],
                                   ),
                                 ),
+                                // Status semantics: gold = finished session,
+                                // bronze = still open. No default material
+                                // success/warning colors.
                                 Container(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: AppSpacing.sm,
@@ -185,10 +188,8 @@ class _SessionHistoryScreenState extends State<SessionHistoryScreen> {
                                   ),
                                   decoration: BoxDecoration(
                                     color: session.isCompleted
-                                        ? AppColors.success.withValues(
-                                            alpha: 0.14,
-                                          )
-                                        : AppColors.warning.withValues(
+                                        ? AppColors.gold.withValues(alpha: 0.14)
+                                        : AppColors.bronze.withValues(
                                             alpha: 0.14,
                                           ),
                                     borderRadius: BorderRadius.circular(
@@ -196,10 +197,10 @@ class _SessionHistoryScreenState extends State<SessionHistoryScreen> {
                                     ),
                                     border: Border.all(
                                       color: session.isCompleted
-                                          ? AppColors.success.withValues(
+                                          ? AppColors.gold.withValues(
                                               alpha: 0.45,
                                             )
-                                          : AppColors.warning.withValues(
+                                          : AppColors.bronze.withValues(
                                               alpha: 0.45,
                                             ),
                                     ),
@@ -210,8 +211,8 @@ class _SessionHistoryScreenState extends State<SessionHistoryScreen> {
                                         : strings.pendingBadge,
                                     style: AppText.microLabel.copyWith(
                                       color: session.isCompleted
-                                          ? AppColors.success
-                                          : AppColors.warning,
+                                          ? AppColors.goldLight
+                                          : AppColors.bronze,
                                     ),
                                   ),
                                 ),

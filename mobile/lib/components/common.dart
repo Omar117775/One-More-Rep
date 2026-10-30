@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../design/motion/pressable_scale.dart';
 import '../design/tokens.dart';
 import '../localization/app_strings.dart';
 
 /// Premium dark card with border used across the app.
+/// Tappable cards get motion-system press feedback (honors reduced motion).
 class OmrCard extends StatelessWidget {
   const OmrCard({
     required this.child,
@@ -27,14 +29,16 @@ class OmrCard extends StatelessWidget {
       child: Padding(padding: padding, child: child),
     );
     if (onTap == null) return card;
-    return Material(
-      color: Colors.transparent,
-      borderRadius: BorderRadius.circular(AppRadii.md),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
+    return PressableScale(
+      child: Material(
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(AppRadii.md),
-        child: card,
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(AppRadii.md),
+          child: card,
+        ),
       ),
     );
   }
@@ -69,7 +73,7 @@ class SectionHeader extends StatelessWidget {
             height: 18,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(AppRadii.pill),
-              color: AppColors.blueLight,
+              color: AppColors.goldLight,
             ),
           ),
           const SizedBox(width: AppSpacing.sm),
@@ -155,7 +159,7 @@ class QuickActionTile extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, color: AppColors.blueLight, size: 22),
+              Icon(icon, color: AppColors.goldLight, size: 22),
               const SizedBox(height: 4),
               // Single line keeps the tile usable at narrow phone widths where
               // the grid cell is short; the full label remains in the tooltip.
@@ -212,6 +216,7 @@ class OmrTextField extends StatelessWidget {
     this.validator,
     this.keyboardType,
     this.obscure = false,
+    this.enabled = true,
     this.suffixIcon,
     this.hintText,
     this.autoValidate,
@@ -223,6 +228,7 @@ class OmrTextField extends StatelessWidget {
   final String? Function(String?)? validator;
   final TextInputType? keyboardType;
   final bool obscure;
+  final bool enabled;
   final Widget? suffixIcon;
   final String? hintText;
   final AutovalidateMode? autoValidate;
@@ -239,6 +245,7 @@ class OmrTextField extends StatelessWidget {
           validator: validator,
           keyboardType: keyboardType,
           obscureText: obscure,
+          enabled: enabled,
           autovalidateMode: autoValidate ?? AutovalidateMode.onUserInteraction,
           decoration: InputDecoration(
             hintText: hintText,

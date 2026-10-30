@@ -1,39 +1,58 @@
 import 'package:flutter/material.dart';
 
+import 'motion/app_page_transitions.dart';
 import 'tokens.dart';
 
-/// Builds the dark-first premium theme from centralized tokens.
-ThemeData buildAppTheme() {
+/// Builds the canonical dark (primary) theme from centralized tokens.
+/// Dark is the brand look; [buildLightAppTheme] exists for a future opt-in.
+ThemeData buildAppTheme() => _buildThemeFromTokens(Brightness.dark);
+
+/// Gold/bronze accents over warm ivory surfaces. Opt-in via `themeMode`.
+ThemeData buildLightAppTheme() => _buildThemeFromTokens(Brightness.light);
+
+ThemeData _buildThemeFromTokens(Brightness brightness) {
+  final isDark = brightness == Brightness.dark;
+  final background = isDark ? AppColors.background : AppColorsLight.background;
+  final surface = isDark ? AppColors.surface : AppColorsLight.surface;
+  final surfaceHigh = isDark
+      ? AppColors.surfaceLight
+      : AppColorsLight.surfaceLight;
+  final textColor = isDark ? AppColors.white : AppColorsLight.text;
+  final mutedColor = isDark ? AppColors.muted : AppColorsLight.muted;
+  final borderColor = isDark ? AppColors.border : AppColorsLight.border;
+
   final base = ThemeData(
     useMaterial3: true,
-    brightness: Brightness.dark,
-    scaffoldBackgroundColor: AppColors.background,
+    brightness: brightness,
+    scaffoldBackgroundColor: background,
     fontFamily: 'Manrope',
     splashFactory: InkSparkle.splashFactory,
   );
 
   final colorScheme = base.colorScheme.copyWith(
-    brightness: Brightness.dark,
-    primary: AppColors.blue,
-    onPrimary: Colors.white,
-    secondary: AppColors.blueLight,
-    onSecondary: Colors.white,
-    surface: AppColors.surface,
-    onSurface: AppColors.white,
+    brightness: brightness,
+    primary: AppColors.gold,
+    onPrimary: AppColors.onAccent,
+    secondary: AppColors.bronze,
+    onSecondary: AppColors.onAccent,
+    surface: surface,
+    onSurface: textColor,
     error: AppColors.danger,
-    onError: Colors.white,
-    outline: AppColors.border,
+    onError: isDark ? Colors.white : Colors.white,
+    outline: borderColor,
   );
 
+  TextStyle darkAware(TextStyle style) => style.copyWith(color: textColor);
+
   final textTheme = base.textTheme
-      .apply(bodyColor: AppColors.white, displayColor: AppColors.white)
+      .apply(bodyColor: textColor, displayColor: textColor)
       .copyWith(
-        displayMedium: AppText.display,
-        headlineMedium: AppText.headline,
-        titleMedium: AppText.title,
-        bodyMedium: AppText.body,
-        bodySmall: AppText.secondary,
-        labelSmall: AppText.caption,
+        displayMedium: darkAware(AppText.display),
+        headlineMedium: darkAware(AppText.headline),
+        titleMedium: darkAware(AppText.title),
+        bodyMedium: darkAware(AppText.body),
+        bodySmall: darkAware(AppText.secondary.copyWith(color: mutedColor)),
+        labelSmall: darkAware(AppText.caption.copyWith(color: mutedColor)),
       );
 
   final shapeRounded = RoundedRectangleBorder(
@@ -45,23 +64,23 @@ ThemeData buildAppTheme() {
     textTheme: textTheme,
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: AppColors.surface,
-      hintStyle: AppText.secondary,
+      fillColor: surface,
+      hintStyle: darkAware(AppText.secondary.copyWith(color: mutedColor)),
       contentPadding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.md,
         vertical: AppSpacing.sm + AppSpacing.xs / 2,
       ),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppRadii.md),
-        borderSide: const BorderSide(color: AppColors.border),
+        borderSide: BorderSide(color: borderColor),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppRadii.md),
-        borderSide: const BorderSide(color: AppColors.border),
+        borderSide: BorderSide(color: borderColor),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppRadii.md),
-        borderSide: const BorderSide(color: AppColors.blueLight, width: 1.5),
+        borderSide: const BorderSide(color: AppColors.goldLight, width: 1.5),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppRadii.md),
@@ -73,68 +92,79 @@ ThemeData buildAppTheme() {
       ),
     ),
     dropdownMenuTheme: DropdownMenuThemeData(
-      textStyle: AppText.body,
+      textStyle: darkAware(AppText.body),
       menuStyle: MenuStyle(
-        backgroundColor: WidgetStatePropertyAll(AppColors.surfaceLight),
+        backgroundColor: WidgetStatePropertyAll(surfaceHigh),
         shape: WidgetStatePropertyAll(shapeRounded),
       ),
     ),
     datePickerTheme: DatePickerThemeData(
-      backgroundColor: AppColors.surfaceLight,
+      backgroundColor: surfaceHigh,
       surfaceTintColor: Colors.transparent,
-      headerForegroundColor: AppColors.white,
+      headerForegroundColor: textColor,
     ),
     timePickerTheme: TimePickerThemeData(
-      backgroundColor: AppColors.surface,
-      dialBackgroundColor: AppColors.surfaceLight,
-      hourMinuteColor: AppColors.surfaceLight,
+      backgroundColor: surface,
+      dialBackgroundColor: surfaceHigh,
+      hourMinuteColor: surfaceHigh,
     ),
     dialogTheme: DialogThemeData(
-      backgroundColor: AppColors.surfaceLight,
+      backgroundColor: surfaceHigh,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadii.lg),
       ),
     ),
     snackBarTheme: SnackBarThemeData(
-      backgroundColor: AppColors.surfaceLight,
-      contentTextStyle: AppText.body,
+      backgroundColor: surfaceHigh,
+      contentTextStyle: darkAware(AppText.body),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadii.sm),
       ),
       behavior: SnackBarBehavior.floating,
     ),
     navigationBarTheme: NavigationBarThemeData(
-      backgroundColor: AppColors.surface,
-      indicatorColor: AppColors.blue.withValues(alpha: 0.22),
+      backgroundColor: surface,
+      indicatorColor: AppColors.gold.withValues(alpha: 0.22),
       labelTextStyle: WidgetStatePropertyAll(
-        AppText.microLabel.copyWith(fontSize: 11, letterSpacing: 0.4),
+        AppText.microLabel.copyWith(
+          fontSize: 11,
+          letterSpacing: 0.4,
+          color: textColor,
+        ),
       ),
     ),
     navigationRailTheme: NavigationRailThemeData(
-      backgroundColor: AppColors.background,
-      indicatorColor: AppColors.blue.withValues(alpha: 0.22),
-      selectedIconTheme: const IconThemeData(color: AppColors.blueLight),
+      backgroundColor: isDark ? AppColors.background : AppColorsLight.surface,
+      indicatorColor: AppColors.gold.withValues(alpha: 0.22),
+      selectedIconTheme: const IconThemeData(color: AppColors.goldLight),
       unselectedIconTheme: const IconThemeData(color: AppColors.muted),
-      selectedLabelTextStyle: AppText.title.copyWith(fontSize: 12),
-      unselectedLabelTextStyle: AppText.secondary.copyWith(fontSize: 12),
+      selectedLabelTextStyle: darkAware(
+        AppText.title.copyWith(
+          fontSize: 12,
+          color: isDark ? AppColors.white : AppColorsLight.text,
+        ),
+      ),
+      unselectedLabelTextStyle: darkAware(
+        AppText.secondary.copyWith(fontSize: 12, color: mutedColor),
+      ),
       groupAlignment: -0.9,
     ),
     switchTheme: SwitchThemeData(
       thumbColor: WidgetStateProperty.resolveWith(
         (states) => states.contains(WidgetState.selected)
-            ? AppColors.blueLight
+            ? AppColors.goldLight
             : AppColors.muted,
       ),
       trackColor: WidgetStateProperty.resolveWith(
         (states) => states.contains(WidgetState.selected)
-            ? AppColors.blue.withValues(alpha: 0.35)
-            : AppColors.border,
+            ? AppColors.gold.withValues(alpha: 0.35)
+            : borderColor,
       ),
     ),
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(
-        backgroundColor: AppColors.blue,
-        foregroundColor: Colors.white,
+        backgroundColor: AppColors.gold,
+        foregroundColor: AppColors.onAccent,
         minimumSize: const Size.fromHeight(56),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadii.md),
@@ -148,9 +178,9 @@ ThemeData buildAppTheme() {
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
-        foregroundColor: AppColors.blueLight,
+        foregroundColor: AppColors.goldLight,
         minimumSize: const Size.fromHeight(AppSpacing.touchTarget),
-        side: const BorderSide(color: AppColors.border),
+        side: BorderSide(color: borderColor),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadii.md),
         ),
@@ -159,94 +189,55 @@ ThemeData buildAppTheme() {
     ),
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
-        foregroundColor: AppColors.blueLight,
-        minimumSize: const Size(
-          AppSpacing.touchTarget,
-          AppSpacing.touchTarget,
-        ),
+        foregroundColor: AppColors.goldLight,
+        minimumSize: const Size(AppSpacing.touchTarget, AppSpacing.touchTarget),
         textStyle: const TextStyle(fontWeight: FontWeight.w700),
       ),
     ),
     iconButtonTheme: IconButtonThemeData(
       style: IconButton.styleFrom(
-        minimumSize: const Size(
-          AppSpacing.touchTarget,
-          AppSpacing.touchTarget,
-        ),
+        minimumSize: const Size(AppSpacing.touchTarget, AppSpacing.touchTarget),
       ),
     ),
     cardTheme: CardThemeData(
-      color: AppColors.surface,
+      color: surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadii.md),
-        side: const BorderSide(color: AppColors.border),
+        side: BorderSide(color: borderColor),
       ),
       elevation: 0,
       margin: EdgeInsets.zero,
     ),
-    dividerTheme: const DividerThemeData(
-      color: AppColors.border,
+    dividerTheme: DividerThemeData(
+      color: borderColor,
       thickness: 1,
       space: 1,
     ),
     progressIndicatorTheme: const ProgressIndicatorThemeData(
-      color: AppColors.blueLight,
+      color: AppColors.goldLight,
       linearTrackColor: AppColors.border,
     ),
-    appBarTheme: const AppBarTheme(
+    appBarTheme: AppBarTheme(
       backgroundColor: Colors.transparent,
       elevation: 0,
       centerTitle: false,
-      iconTheme: IconThemeData(color: AppColors.white),
+      iconTheme: IconThemeData(color: textColor),
       titleTextStyle: TextStyle(
         fontFamily: 'Manrope',
         fontSize: 18,
         fontWeight: FontWeight.w800,
-        color: AppColors.white,
+        color: textColor,
       ),
     ),
     pageTransitionsTheme: const PageTransitionsTheme(
       builders: {
-        TargetPlatform.android: _fadeSlideTransition,
-        TargetPlatform.iOS: _fadeSlideTransition,
-        TargetPlatform.macOS: _fadeSlideTransition,
-        TargetPlatform.windows: _fadeSlideTransition,
-        TargetPlatform.linux: _fadeSlideTransition,
-        TargetPlatform.fuchsia: _fadeSlideTransition,
+        TargetPlatform.android: AppPageTransitionsBuilder(),
+        TargetPlatform.iOS: AppPageTransitionsBuilder(),
+        TargetPlatform.macOS: AppPageTransitionsBuilder(),
+        TargetPlatform.windows: AppPageTransitionsBuilder(),
+        TargetPlatform.linux: AppPageTransitionsBuilder(),
+        TargetPlatform.fuchsia: AppPageTransitionsBuilder(),
       },
     ),
   );
-}
-
-const PageTransitionsBuilder _fadeSlideTransition = _FadeSlideBuilder();
-
-class _FadeSlideBuilder extends PageTransitionsBuilder {
-  const _FadeSlideBuilder();
-
-  @override
-  Widget buildTransitions<T>(
-    PageRoute<T> route,
-    BuildContext context,
-    Animation<double> animation,
-    Animation<double> secondaryAnimation,
-    Widget child,
-  ) {
-    if (MediaQuery.of(context).disableAnimations) {
-      return child;
-    }
-    final curved = CurvedAnimation(
-      parent: animation,
-      curve: Curves.easeOutCubic,
-    );
-    return FadeTransition(
-      opacity: curved,
-      child: SlideTransition(
-        position: Tween<Offset>(
-          begin: const Offset(0, 0.05),
-          end: Offset.zero,
-        ).animate(curved),
-        child: child,
-      ),
-    );
-  }
 }

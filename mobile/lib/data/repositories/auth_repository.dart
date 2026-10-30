@@ -9,6 +9,14 @@ abstract class AuthRepository {
     String deviceName = 'One More Rep Trainee App',
   });
 
+  Future<LoginResult> register({
+    required String name,
+    required String email,
+    required String password,
+    required String passwordConfirmation,
+    String deviceName = 'One More Rep Trainee App',
+  });
+
   Future<User> me();
 
   Future<void> logout();
@@ -26,11 +34,33 @@ class ApiAuthRepository implements AuthRepository {
     required String password,
     String deviceName = 'One More Rep Trainee App',
   }) async {
-    final body = await _client.post('/auth/login', body: {
-      'email': email,
-      'password': password,
-      'device_name': deviceName,
-    });
+    final body = await _client.post(
+      '/auth/login',
+      body: {'email': email, 'password': password, 'device_name': deviceName},
+    );
+    final result = parseLoginResponse(body);
+    _client.authToken = result.token;
+    return result;
+  }
+
+  @override
+  Future<LoginResult> register({
+    required String name,
+    required String email,
+    required String password,
+    required String passwordConfirmation,
+    String deviceName = 'One More Rep Trainee App',
+  }) async {
+    final body = await _client.post(
+      '/auth/register',
+      body: {
+        'name': name,
+        'email': email,
+        'password': password,
+        'password_confirmation': passwordConfirmation,
+        'device_name': deviceName,
+      },
+    );
     final result = parseLoginResponse(body);
     _client.authToken = result.token;
     return result;

@@ -18,8 +18,10 @@ class CardioViewModel extends ChangeNotifier {
 
   List<CardioEntry> get entriesNewestFirst {
     final list = [...entries];
-    list.sort((a, b) => (b.performedAt ?? DateTime.fromMillisecondsSinceEpoch(0))
-        .compareTo(a.performedAt ?? DateTime.fromMillisecondsSinceEpoch(0)));
+    list.sort(
+      (a, b) => (b.performedAt ?? DateTime.fromMillisecondsSinceEpoch(0))
+          .compareTo(a.performedAt ?? DateTime.fromMillisecondsSinceEpoch(0)),
+    );
     return list;
   }
 
